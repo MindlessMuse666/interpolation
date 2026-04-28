@@ -1,9 +1,9 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
-COPY package*.json ./
+COPY frontend/package*.json ./
 RUN npm install
-COPY . .
+COPY frontend/ .
 # Set build-time env if needed
 ARG VITE_API_URL=/api/v1
 ENV VITE_API_URL=$VITE_API_URL

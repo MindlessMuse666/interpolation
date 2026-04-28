@@ -19,3 +19,6 @@ tech.*
 
 # deploy
 dist/
+
+# qa
+coverage
