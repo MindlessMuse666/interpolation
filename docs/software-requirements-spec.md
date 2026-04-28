@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZUdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzI1NjNFQiIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN0MzQUVEIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSIxIiBzdGREZXZpYXRpb249IjEuNSIgZmxvb2QtY29sb3I9IiMwRjE3MkEiIGZsb29kLW9wYWNpdHk9IjAuMTIiIC8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjRjhGQUZDIiBzdHJva2U9IiNFMkU4RjAiIHN0cm9rZS13aWR0aD0iMiIgLz4KCiAgPHBhdGggZD0iTSAyMCA3MC42IAogICAgICAgICAgIEMgMjQuMyA1NS42LCAyOC42IDQwLjYsIDMyLjkgNDguMSAKICAgICAgICAgICBDIDM3LjEgNTYuNiwgNDUuNyA3OC4xLCA1MC4wIDYzLjEgCiAgICAgICAgICAgQyA1NC4zIDQ4LjEsIDYyLjkgMjEuOSwgNjcuMSAzNi45IAogICAgICAgICAgIEMgNzEuNCA1MS45LCA3NS43IDU5LjQsIDgwLjAgNDQuNCIgCiAgICAgICAgZmlsbD0ibm9uZSIgCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2xpbmVHcmFkKSIgCiAgICAgICAgc3Ryb2tlLXdpZHRoPSIzLjUiIAogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgCiAgICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz4KCiAgPGcgZmlsdGVyPSJ1cmwoI3NoYWRvdykiPgogICAgPGNpcmNsZSBjeD0iMjAiIGN5PSI3MC42IiByPSI0LjUiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzFFMjkzQiIgc3Ryb2tlLXdpZHRoPSIyLjUiIC8+CiAgICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjcwLjYiIHI9IjEuNSIgZmlsbD0iIzFFMjkzQiIgLz4KICAgIAogICAgPGNpcmNsZSBjeD0iMzIuOSIgY3k9IjQ4LjEiIHI9IjQuNSIgZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjIuNSIgLz4KICAgIDxjaXJjbGUgY3g9IjMyLjkiIGN5PSI0OC4xIiByPSIxLjUiIGZpbGw9IiMxRTI5M0IiIC8+CiAgICAKICAgIDxjaXJjbGUgY3g9IjUwLjAiIGN5PSI2My4xIiByPSI0LjUiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzFFMjkzQiIgc3Ryb2tlLXdpZHRoPSIyLjUiIC8+CiAgICA8Y2lyY2xlIGN4PSI1MC4wIiBjeT0iNjMuMSIgcj0iMS41IiBmaWxsPSIjMUUyOTNCIiAvPgogICAgCiAgICA8Y2lyY2xlIGN4PSI2Ny4xIiBjeT0iMzYuOSIgcj0iNC41IiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMxRTI5M0IiIHN0cm9rZS13aWR0aD0iMi41IiAvPgogICAgPGNpcmNsZSBjeD0iNjcuMSIgY3k9IjM2LjkiIHI9IjEuNSIgZmlsbD0iIzFFMjkzQiIgLz4KICAgIAogICAgPGNpcmNsZSBjeD0iODAuMCIgY3k9IjQ0LjQiIHI9IjQuNSIgZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjIuNSIgLz4KICAgIDxjaXJjbGUgY3g9IjgwLjAiIGN5PSI0NC40IiByPSIxLjUiIGZpbGw9IiMxRTI5M0IiIC8+CiAgPC9nPgo8L3N2Zz4=" alt="Interpolation logo" width="100" height="100" />
+  <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
   <br/>
   <br/>
   <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
@@ -297,7 +297,7 @@ interpolation:<md5(method + отсортированные_точки + target_x
 
 ### 7.1 База данных SQLite (History Service)  
 
-**ER-диаграмма (сущность "calculation"):**  
+**ERD (сущность "calculation"):**  
 
 ```mermaid
 erDiagram
@@ -332,7 +332,7 @@ erDiagram
 - Графики на базе `vue-chartjs` (scatter + line).  
 - Структура каталогов:  
 
-```
+```text
 src/
   main.js
   App.vue
@@ -378,11 +378,11 @@ Gateway автоматически генерирует Swagger/OpenAPI-спец
 
 ## 11. Управление версиями  
 
-Разработка ведётся с применением Git. Репозиторий размещён на GitHub. Ветка для основной разработки - `main`. Все коммиты должны соответствовать стилю, описанному в разделе "Руководство для нейро-программиста".
+Разработка ведётся с применением Git. Репозиторий размещён на GitHub. Ветка для основной разработки - `main`. Все коммиты должны соответствовать стилю, описанному в разделе "Руководство программиста".
 
 ---
 
-## 12. Руководство для нейро-программиста  
+## 12. Руководство программиста  
 
 ### 12.1 Принципы разработки  
 
@@ -423,18 +423,18 @@ Gateway автоматически генерирует Swagger/OpenAPI-спец
 
 **Примеры корректных сообщений:**  
 
-- `feat(interpolation): реализован многочлен Лагранжа`  
-- `feat(api): добавлен эндпоинт GET /api/v1/history`  
+- `feat(interpolation): реализован многочлен лагранжа`  
+- `feat(api): добавлен эндпоинт get /api/v1/history`  
 - `feat(fe): свёрстан компонент песочницы`  
 - `fix(fe): исправлена ширина графиков на мобильных`  
 - `refactor(interpolation): выделены общие вспомогательные функции`  
 - `test(api): интеграционные тесты интерполяции`  
-- `chore(config): переведены конфигурации на TOML`  
+- `chore(config): переведены конфигурации на toml`  
 
-После каждого логически завершённого запроса нейро-программист **обязан** предлагать сообщение коммита в указанном формате, резюмируя выполненные изменения.
+После каждого завершённой фичи программист **обязан** делать коммит в указанном формате, резюмируя выполненные изменения.
 
 ---
 
 <div align="center">
-  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGluZUdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzI1NjNFQiIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjN0MzQUVEIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSIxIiBzdGREZXZpYXRpb249IjEuNSIgZmxvb2QtY29sb3I9IiMwRjE3MkEiIGZsb29kLW9wYWNpdHk9IjAuMTIiIC8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQ1IiBmaWxsPSIjRjhGQUZDIiBzdHJva2U9IiNFMkU4RjAiIHN0cm9rZS13aWR0aD0iMiIgLz4KCiAgPHBhdGggZD0iTSAyMCA3MC42IAogICAgICAgICAgIEMgMjQuMyA1NS42LCAyOC42IDQwLjYsIDMyLjkgNDguMSAKICAgICAgICAgICBDIDM3LjEgNTYuNiwgNDUuNyA3OC4xLCA1MC4wIDYzLjEgCiAgICAgICAgICAgQyA1NC4zIDQ4LjEsIDYyLjkgMjEuOSwgNjcuMSAzNi45IAogICAgICAgICAgIEMgNzEuNCA1MS45LCA3NS43IDU5LjQsIDgwLjAgNDQuNCIgCiAgICAgICAgZmlsbD0ibm9uZSIgCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2xpbmVHcmFkKSIgCiAgICAgICAgc3Ryb2tlLXdpZHRoPSIzLjUiIAogICAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgCiAgICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgLz4KCiAgPGcgZmlsdGVyPSJ1cmwoI3NoYWRvdykiPgogICAgPGNpcmNsZSBjeD0iMjAiIGN5PSI3MC42IiByPSI0LjUiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzFFMjkzQiIgc3Ryb2tlLXdpZHRoPSIyLjUiIC8+CiAgICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjcwLjYiIHI9IjEuNSIgZmlsbD0iIzFFMjkzQiIgLz4KICAgIAogICAgPGNpcmNsZSBjeD0iMzIuOSIgY3k9IjQ4LjEiIHI9IjQuNSIgZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjIuNSIgLz4KICAgIDxjaXJjbGUgY3g9IjMyLjkiIGN5PSI0OC4xIiByPSIxLjUiIGZpbGw9IiMxRTI5M0IiIC8+CiAgICAKICAgIDxjaXJjbGUgY3g9IjUwLjAiIGN5PSI2My4xIiByPSI0LjUiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzFFMjkzQiIgc3Ryb2tlLXdpZHRoPSIyLjUiIC8+CiAgICA8Y2lyY2xlIGN4PSI1MC4wIiBjeT0iNjMuMSIgcj0iMS41IiBmaWxsPSIjMUUyOTNCIiAvPgogICAgCiAgICA8Y2lyY2xlIGN4PSI2Ny4xIiBjeT0iMzYuOSIgcj0iNC41IiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiMxRTI5M0IiIHN0cm9rZS13aWR0aD0iMi41IiAvPgogICAgPGNpcmNsZSBjeD0iNjcuMSIgY3k9IjM2LjkiIHI9IjEuNSIgZmlsbD0iIzFFMjkzQiIgLz4KICAgIAogICAgPGNpcmNsZSBjeD0iODAuMCIgY3k9IjQ0LjQiIHI9IjQuNSIgZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjMUUyOTNCIiBzdHJva2Utd2lkdGg9IjIuNSIgLz4KICAgIDxjaXJjbGUgY3g9IjgwLjAiIGN5PSI0NC40IiByPSIxLjUiIGZpbGw9IiMxRTI5M0IiIC8+CiAgPC9nPgo8L3N2Zz4=" alt="Interpolation logo" width="100" height="100" />
+  <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
 </div>
