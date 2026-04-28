@@ -27,5 +27,4 @@ docker-compose.*
 config.toml
 backend/gateway/
 backend/coverage
-backend/history/
 Dockerfile
