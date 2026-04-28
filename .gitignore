@@ -19,6 +19,3 @@ tech.*
 
 # deploy
 dist/
-
-# temp
-Dockerfile
