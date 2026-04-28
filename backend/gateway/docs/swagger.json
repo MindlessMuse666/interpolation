@@ -1,0 +1,33 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Gateway for Interpolation educational project.",
+        "title": "Interpolation API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/methods": {
+            "get": {
+                "description": "Returns supported interpolation methods",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get list of interpolation methods",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

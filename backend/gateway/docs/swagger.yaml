@@ -1,0 +1,22 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: API Gateway for Interpolation educational project.
+  title: Interpolation API
+  version: "1.0"
+paths:
+  /methods:
+    get:
+      description: Returns supported interpolation methods
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get list of interpolation methods
+swagger: "2.0"

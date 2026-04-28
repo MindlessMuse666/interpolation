@@ -27,4 +27,3 @@ docker-compose.*
 config.toml
 backend/coverage
 Dockerfile
-backend/gateway/docs/
