@@ -107,13 +107,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import tasksData from '../tasks.json'
 
 const tab = ref('theory')
 const tasks = ref(tasksData)
 const userAnswers = ref({})
 const results = ref({})
+
+onMounted(() => {
+  const saved = localStorage.getItem('interpolation_practice_results')
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved)
+      results.value = parsed.results || {}
+      userAnswers.value = parsed.answers || {}
+    } catch (e) {
+      console.error('Failed to load results', e)
+    }
+  }
+})
+
+const saveResults = () => {
+  localStorage.setItem('interpolation_practice_results', JSON.stringify({
+    results: results.value,
+    answers: userAnswers.value
+  }))
+}
 
 const theory = [
   {
@@ -141,6 +161,7 @@ const checkAnswer = (id) => {
 
   const isCorrect = Math.abs(userVal - task.correct_answer) < 0.01
   results.value[id] = isCorrect
+  saveResults()
 }
 
 const getAnswerColor = (id) => {

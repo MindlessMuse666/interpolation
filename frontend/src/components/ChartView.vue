@@ -15,7 +15,9 @@ import {
   LineElement,
   PointElement,
   LinearScale,
-  CategoryScale
+  CategoryScale,
+  LineController,
+  ScatterController
 } from 'chart.js'
 
 ChartJS.register(
@@ -25,7 +27,9 @@ ChartJS.register(
   LineElement,
   PointElement,
   LinearScale,
-  CategoryScale
+  CategoryScale,
+  LineController,
+  ScatterController
 )
 
 const props = defineProps({

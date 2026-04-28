@@ -1,12 +1,88 @@
 basePath: /api/v1
+definitions:
+  main.CalculationRecord:
+    properties:
+      created_at:
+        example: "2026-04-28T18:32:04Z"
+        type: string
+      id:
+        example: 1
+        type: integer
+      method:
+        example: linear
+        type: string
+      points:
+        items:
+          $ref: '#/definitions/main.Point'
+        type: array
+      result:
+        example: 1.5
+        type: number
+      target_x:
+        example: 1.5
+        type: number
+    type: object
+  main.InterpolateRequest:
+    properties:
+      method:
+        example: linear
+        type: string
+      points:
+        items:
+          $ref: '#/definitions/main.Point'
+        type: array
+      target_x:
+        example: 1.5
+        type: number
+    type: object
+  main.InterpolateResponse:
+    properties:
+      cached:
+        example: false
+        type: boolean
+      curve:
+        items:
+          $ref: '#/definitions/main.Point'
+        type: array
+      method:
+        example: linear
+        type: string
+      result:
+        example: 1.5
+        type: number
+    type: object
+  main.Point:
+    properties:
+      x:
+        example: 0
+        type: number
+      "y":
+        example: 0
+        type: number
+    type: object
 host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: mindlessmuse.666@gmail.com
+    name: API Support
+    url: http://localhost/support
   description: API Gateway для учебного проекта по интерполяции.
   title: Interpolation API
   version: "1.0"
 paths:
   /history:
+    delete:
+      description: Удаляет все записи из базы данных истории.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: История успешно очищена
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Очистить историю
     get:
       description: Проксирует запрос к сервису истории.
       produces:
@@ -16,7 +92,7 @@ paths:
           description: Список записей истории
           schema:
             items:
-              type: string
+              $ref: '#/definitions/main.CalculationRecord'
             type: array
       summary: Получить историю
   /interpolate:
@@ -24,13 +100,26 @@ paths:
       consumes:
       - application/json
       description: Проксирует запрос к сервису интерполяции для вычисления значения.
+      parameters:
+      - description: Параметры интерполяции
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.InterpolateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Успешное вычисление
           schema:
-            type: string
+            $ref: '#/definitions/main.InterpolateResponse'
+        "400":
+          description: Неверный формат данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
       summary: Интерполяция данных
   /methods:
     get:

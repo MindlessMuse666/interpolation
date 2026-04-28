@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	"github.com/MindlessMuse666/interpolation/backend/core/interpolation"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
-	"github.com/user/interpolation/backend/core/interpolation"
 )
 
 type Config struct {
@@ -89,9 +89,18 @@ func setupRedis() {
 
 func setupRabbitMQ() {
 	var err error
-	amqpConn, err = amqp.Dial(cfg.Interpolation.RabbitMQURL)
+	// Retry connection to RabbitMQ
+	for i := 0; i < 10; i++ {
+		amqpConn, err = amqp.Dial(cfg.Interpolation.RabbitMQURL)
+		if err == nil {
+			break
+		}
+		log.Warn().Err(err).Msgf("RabbitMQ connection failed, retrying in 5s... (%d/10)", i+1)
+		time.Sleep(5 * time.Second)
+	}
+
 	if err != nil {
-		log.Error().Err(err).Msg("RabbitMQ connection failed")
+		log.Error().Err(err).Msg("RabbitMQ connection failed after retries")
 		return
 	}
 
@@ -229,7 +238,7 @@ func handleInterpolate(c *gin.Context) {
 
 func main() {
 	setupRedis()
-	setupRabbitMQ()
+	go setupRabbitMQ()
 	defer func() {
 		if amqpConn != nil {
 			amqpConn.Close()

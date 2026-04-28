@@ -217,21 +217,31 @@ const removePoint = (index) => {
 }
 
 const calculate = async () => {
-  if (points.value.length < 2) return
+  if (!points.value || points.value.length < 2) return
 
   loading.value = true
   error.value = null
   try {
+    const formattedPoints = points.value.map(p => ({ 
+      x: parseFloat(p.x) || 0, 
+      y: parseFloat(p.y) || 0 
+    }))
+    
     const resp = await axios.post(`${API_URL}/interpolate`, {
       method: method.value,
-      points: points.value.map(p => ({ x: Number(p.x), y: Number(p.y) })),
-      target_x: Number(targetX.value)
+      points: formattedPoints,
+      target_x: parseFloat(targetX.value) || 0
     })
-    result.value = resp.data.result
-    curve.value = resp.data.curve
-    cached.value = resp.data.cached
-    fetchHistory()
+    
+    if (resp.data) {
+      result.value = resp.data.result
+      // Убедимся, что кривая - это массив
+      curve.value = Array.isArray(resp.data.curve) ? resp.data.curve : []
+      cached.value = resp.data.cached
+      fetchHistory()
+    }
   } catch (err) {
+    console.error('Calculation error:', err)
     error.value = err.response?.data?.error || 'Ошибка при вычислении'
     result.value = null
     curve.value = []

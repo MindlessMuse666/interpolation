@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -12,6 +13,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	_ "github.com/MindlessMuse666/interpolation/backend/gateway/docs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -21,12 +23,14 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/ulule/limiter/v3"
 	mredis "github.com/ulule/limiter/v3/drivers/store/redis"
-	_ "github.com/user/interpolation/backend/gateway/docs"
 )
 
 // @title Interpolation API
 // @version 1.0
 // @description API Gateway для учебного проекта по интерполяции.
+// @contact.name API Support
+// @contact.url http://localhost/support
+// @contact.email mindlessmuse.666@gmail.com
 // @host localhost:8080
 // @BasePath /api/v1
 
@@ -62,6 +66,20 @@ func proxyHandler(target string) gin.HandlerFunc {
 		Scheme: targetURL.Scheme,
 		Host:   targetURL.Host,
 	})
+
+	// Add transport with reasonable timeouts to avoid status 502 on slow connections
+	proxy.Transport = &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
 
 	return func(c *gin.Context) {
 		c.Request.URL.Path = targetURL.Path
@@ -130,23 +148,52 @@ func setupRateLimiter() gin.HandlerFunc {
 // @Description Проксирует запрос к сервису интерполяции для вычисления значения.
 // @Accept json
 // @Produce json
-// @Success 200 {object} string "Успешное вычисление"
+// @Param request body InterpolateRequest true "Параметры интерполяции"
+// @Success 200 {object} InterpolateResponse "Успешное вычисление"
+// @Failure 400 {object} map[string]string "Неверный формат данных"
 // @Router /interpolate [post]
-func handleInterpolateProxy(c *gin.Context) {}
+func _swaggerInterpolateDoc() {}
 
 // @Summary Получить историю
 // @Description Проксирует запрос к сервису истории.
 // @Produce json
-// @Success 200 {array} main.CalculationRecord
+// @Success 200 {array} CalculationRecord "Список записей истории"
 // @Router /history [get]
-func handleHistoryProxy(c *gin.Context) {}
+func _swaggerHistoryGetDoc() {}
 
 // @Summary Очистить историю
 // @Description Удаляет все записи из базы данных истории.
 // @Produce json
-// @Success 200 {object} map[string]string
+// @Success 200 {object} map[string]string "История успешно очищена"
 // @Router /history [delete]
-func handleClearHistoryProxy(c *gin.Context) {}
+func _swaggerHistoryDeleteDoc() {}
+
+type InterpolateRequest struct {
+	Method  string  `json:"method" example:"linear"`
+	Points  []Point `json:"points"`
+	TargetX float64 `json:"target_x" example:"1.5"`
+}
+
+type Point struct {
+	X float64 `json:"x" example:"0.0"`
+	Y float64 `json:"y" example:"0.0"`
+}
+
+type InterpolateResponse struct {
+	Method string  `json:"method" example:"linear"`
+	Result float64 `json:"result" example:"1.5"`
+	Curve  []Point `json:"curve"`
+	Cached bool    `json:"cached" example:"false"`
+}
+
+type CalculationRecord struct {
+	ID        int       `json:"id" example:"1"`
+	Method    string    `json:"method" example:"linear"`
+	Points    []Point   `json:"points"`
+	TargetX   float64   `json:"target_x" example:"1.5"`
+	Result    float64   `json:"result" example:"1.5"`
+	CreatedAt time.Time `json:"created_at" example:"2026-04-28T18:32:04Z"`
+}
 
 func main() {
 	r := gin.New()
@@ -180,6 +227,13 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
+		v1.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"service": "Interpolation API Gateway",
+				"status":  "running",
+				"version": "1.0",
+			})
+		})
 		v1.GET("/methods", handleMethods)
 		// @Router /interpolate [post]
 		v1.POST("/interpolate", proxyHandler(cfg.Gateway.InterpolationURL+"/api/v1/interpolate"))

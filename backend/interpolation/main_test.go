@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/MindlessMuse666/interpolation/backend/core/interpolation"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"github.com/user/interpolation/backend/core/interpolation"
 )
 
 func TestInterpolateEndpoint(t *testing.T) {
@@ -30,7 +30,7 @@ func TestInterpolateEndpoint(t *testing.T) {
 
 	req, _ := http.NewRequest(http.MethodPost, "/api/v1/interpolate", bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
-	
+
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 

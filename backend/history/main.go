@@ -13,12 +13,12 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	"github.com/MindlessMuse666/interpolation/backend/core/interpolation"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
-	"github.com/user/interpolation/backend/core/interpolation"
 )
 
 type Config struct {
@@ -104,14 +104,25 @@ func setupDB() {
 
 func setupRabbitMQ() {
 	var err error
-	amqpConn, err = amqp.Dial(cfg.History.RabbitMQURL)
+	// Retry connection to RabbitMQ
+	for i := 0; i < 10; i++ {
+		amqpConn, err = amqp.Dial(cfg.History.RabbitMQURL)
+		if err == nil {
+			break
+		}
+		log.Warn().Err(err).Msgf("RabbitMQ connection failed, retrying in 5s... (%d/10)", i+1)
+		time.Sleep(5 * time.Second)
+	}
+
 	if err != nil {
-		log.Fatal().Err(err).Msg("RabbitMQ connection failed")
+		log.Error().Err(err).Msg("RabbitMQ connection failed after retries")
+		return
 	}
 
 	amqpChan, err = amqpConn.Channel()
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to open RabbitMQ channel")
+		log.Error().Err(err).Msg("Failed to open RabbitMQ channel")
+		return
 	}
 
 	err = amqpChan.ExchangeDeclare(
@@ -241,7 +252,7 @@ func handleClearHistory(c *gin.Context) {
 
 func main() {
 	setupDB()
-	setupRabbitMQ()
+	go setupRabbitMQ()
 	defer func() {
 		if amqpConn != nil {
 			amqpConn.Close()

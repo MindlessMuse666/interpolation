@@ -9,7 +9,11 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "API Support",
+            "url": "http://localhost/support",
+            "email": "mindlessmuse.666@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -28,6 +32,24 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
+                                "$ref": "#/definitions/main.CalculationRecord"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Удаляет все записи из базы данных истории.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Очистить историю",
+                "responses": {
+                    "200": {
+                        "description": "История успешно очищена",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
                                 "type": "string"
                             }
                         }
@@ -45,11 +67,31 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Интерполяция данных",
+                "parameters": [
+                    {
+                        "description": "Параметры интерполяции",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.InterpolateRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Успешное вычисление",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/main.InterpolateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат данных",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -72,6 +114,94 @@ const docTemplate = `{
                             }
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.CalculationRecord": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2026-04-28T18:32:04Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "method": {
+                    "type": "string",
+                    "example": "linear"
+                },
+                "points": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Point"
+                    }
+                },
+                "result": {
+                    "type": "number",
+                    "example": 1.5
+                },
+                "target_x": {
+                    "type": "number",
+                    "example": 1.5
+                }
+            }
+        },
+        "main.InterpolateRequest": {
+            "type": "object",
+            "properties": {
+                "method": {
+                    "type": "string",
+                    "example": "linear"
+                },
+                "points": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Point"
+                    }
+                },
+                "target_x": {
+                    "type": "number",
+                    "example": 1.5
+                }
+            }
+        },
+        "main.InterpolateResponse": {
+            "type": "object",
+            "properties": {
+                "cached": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "curve": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.Point"
+                    }
+                },
+                "method": {
+                    "type": "string",
+                    "example": "linear"
+                },
+                "result": {
+                    "type": "number",
+                    "example": 1.5
+                }
+            }
+        },
+        "main.Point": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "example": 0
+                },
+                "y": {
+                    "type": "number",
+                    "example": 0
                 }
             }
         }

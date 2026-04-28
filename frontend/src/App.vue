@@ -5,23 +5,13 @@
         <v-avatar size="32" class="mr-3">
           <v-img src="/favicon.svg" alt="Logo" />
         </v-avatar>
-        <v-app-bar-title class="font-weight-bold text-h6">Interpolation</v-app-bar-title>
-        
+        <v-app-bar-title class="font-weight-bold text-h6">Численные методы. Интерполяция</v-app-bar-title>
+
         <v-spacer></v-spacer>
-        
+
         <div class="d-none d-sm-flex gap-2">
-          <v-btn 
-            to="/learning" 
-            variant="text" 
-            class="nav-btn"
-            :active-class="'nav-btn-active'"
-          >Обучение</v-btn>
-          <v-btn 
-            to="/sandbox" 
-            variant="text" 
-            class="nav-btn"
-            :active-class="'nav-btn-active'"
-          >Песочница</v-btn>
+          <v-btn to="/learning" variant="text" class="nav-btn" :active-class="'nav-btn-active'">Обучение</v-btn>
+          <v-btn to="/sandbox" variant="text" class="nav-btn" :active-class="'nav-btn-active'">Песочница</v-btn>
         </div>
 
         <!-- Mobile Menu -->
@@ -45,10 +35,15 @@
       <router-view></router-view>
     </v-main>
 
-    <v-footer app border height="48" color="surface">
-      <v-container class="pa-0 px-4 fill-height d-flex justify-space-between" fluid>
-        <span class="text-caption text-text-secondary">© 2026 Учебный проект по интерполяции</span>
-        <span class="text-caption text-text-secondary d-none d-sm-inline">Численные методы</span>
+    <v-footer app color="surface" class="border-t-thin justify-center footer-sticky">
+      <v-container class="pa-0 px-4 fill-height d-flex flex-column align-center justify-center" fluid>
+        <div class="d-flex align-center mb-1">
+          <v-avatar size="20" class="mr-2 opacity-70">
+            <v-img src="/favicon.svg" alt="Logo" />
+          </v-avatar>
+          <span class="text-caption font-weight-bold text-text-primary">Интерполяция</span>
+        </div>
+        <span class="text-caption text-text-secondary">© 2026 Учебный проект по численным методам</span>
       </v-container>
     </v-footer>
   </v-app>
@@ -120,10 +115,13 @@ body {
 /* Скрытие стрелок у числовых инпутов */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
+  appearance: none;
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type=number] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
