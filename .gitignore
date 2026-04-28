@@ -26,6 +26,6 @@ docker/
 docker-compose.*
 config.toml
 backend/gateway/
-backend/interpolation/
 backend/coverage
 backend/history/
+Dockerfile
