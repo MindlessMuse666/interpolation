@@ -25,6 +25,6 @@ frontend/
 docker/
 docker-compose.*
 config.toml
-backend/gateway/
 backend/coverage
 Dockerfile
+backend/gateway/docs/
