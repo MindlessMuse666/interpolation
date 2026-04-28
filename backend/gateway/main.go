@@ -137,9 +137,16 @@ func handleInterpolateProxy(c *gin.Context) {}
 // @Summary Получить историю
 // @Description Проксирует запрос к сервису истории.
 // @Produce json
-// @Success 200 {array} string "Список записей истории"
+// @Success 200 {array} main.CalculationRecord
 // @Router /history [get]
 func handleHistoryProxy(c *gin.Context) {}
+
+// @Summary Очистить историю
+// @Description Удаляет все записи из базы данных истории.
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /history [delete]
+func handleClearHistoryProxy(c *gin.Context) {}
 
 func main() {
 	r := gin.New()
@@ -178,6 +185,8 @@ func main() {
 		v1.POST("/interpolate", proxyHandler(cfg.Gateway.InterpolationURL+"/api/v1/interpolate"))
 		// @Router /history [get]
 		v1.GET("/history", proxyHandler(cfg.Gateway.HistoryURL+"/api/v1/history"))
+		// @Router /history [delete]
+		v1.DELETE("/history", proxyHandler(cfg.Gateway.HistoryURL+"/api/v1/history"))
 	}
 
 	// Swagger

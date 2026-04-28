@@ -216,7 +216,27 @@ func handleGetHistory(c *gin.Context) {
 		history = append(history, r)
 	}
 
+	// Return empty array instead of null
+	if history == nil {
+		history = []CalculationRecord{}
+	}
+
 	c.JSON(http.StatusOK, history)
+}
+
+// @Summary Очистить историю
+// @Description Удаляет все записи из таблицы calculations.
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /history [delete]
+func handleClearHistory(c *gin.Context) {
+	_, err := db.Exec("DELETE FROM calculations")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear history"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "History cleared"})
 }
 
 func main() {
@@ -236,6 +256,7 @@ func main() {
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("/history", handleGetHistory)
+		v1.DELETE("/history", handleClearHistory)
 	}
 
 	srv := &http.Server{

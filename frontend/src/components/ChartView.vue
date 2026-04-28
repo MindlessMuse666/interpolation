@@ -47,36 +47,40 @@ const chartData = computed(() => {
   const datasets = [
     {
       label: 'Исходные точки',
-      data: props.points.map(p => ({ x: p.x, y: p.y })),
-      backgroundColor: '#f87979',
-      borderColor: '#f87979',
+      data: props.points.map(p => ({ x: Number(p.x), y: Number(p.y) })),
+      backgroundColor: '#E88CA5',
+      borderColor: '#E88CA5',
       showLine: false,
       pointRadius: 6,
-      type: 'scatter'
+      type: 'scatter',
+      order: 1
     }
   ]
 
-  if (props.curve.length > 0) {
+  if (props.curve && props.curve.length > 0) {
     datasets.push({
       label: 'Интерполяционная кривая',
-      data: props.curve.map(p => ({ x: p.x, y: p.y })),
-      borderColor: '#3f51b5',
-      backgroundColor: '#3f51b5',
-      tension: 0.1,
+      data: props.curve.map(p => ({ x: Number(p.x), y: Number(p.y) })),
+      borderColor: '#5E9DC8',
+      backgroundColor: '#5E9DC8',
+      tension: 0.3,
       pointRadius: 0,
-      fill: false
+      fill: false,
+      borderWidth: 3,
+      order: 2
     })
   }
 
   if (props.targetPoint) {
     datasets.push({
       label: 'Результат',
-      data: [{ x: props.targetPoint.x, y: props.targetPoint.y }],
-      backgroundColor: '#4caf50',
-      borderColor: '#4caf50',
-      pointRadius: 8,
-      pointStyle: 'star',
-      type: 'scatter'
+      data: [{ x: Number(props.targetPoint.x), y: Number(props.targetPoint.y) }],
+      backgroundColor: '#3BAB7B',
+      borderColor: '#3BAB7B',
+      pointRadius: 10,
+      pointStyle: 'rectRot',
+      type: 'scatter',
+      order: 0
     })
   }
 
