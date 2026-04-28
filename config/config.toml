@@ -1,0 +1,19 @@
+[gateway]
+port = 8080
+interpolation_url = "http://interpolation-service:8081"
+history_url = "http://history-service:8082"
+redis_addr = "redis:6379"
+
+[interpolation]
+port = 8081
+redis_addr = "redis:6379"
+rabbitmq_url = "amqp://guest:guest@rabbitmq:5672/"
+cache_ttl = 3600
+
+[history]
+port = 8082
+sqlite_path = "./data/history.db"
+rabbitmq_url = "amqp://guest:guest@rabbitmq:5672/"
+queue_name = "history_queue"
+exchange_name = "calculations"
+routing_key = "calculation.completed"

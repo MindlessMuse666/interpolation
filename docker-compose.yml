@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway
+    networks:
+      - interpolation-network
+
+  gateway:
+    build:
+      context: ./backend
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/config.toml:/app/config.toml
+    depends_on:
+      - interpolation-service
+      - history-service
+      - redis
+    networks:
+      - interpolation-network
+
+  interpolation-service:
+    build:
+      context: ./backend
+      dockerfile: interpolation/Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./config/config.toml:/app/config.toml
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - interpolation-network
+
+  history-service:
+    build:
+      context: ./backend
+      dockerfile: history/Dockerfile
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./config/config.toml:/app/config.toml
+      - history-db:/app/data
+    depends_on:
+      - rabbitmq
+    networks:
+      - interpolation-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - interpolation-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - interpolation-network
+
+networks:
+  interpolation-network:
+    driver: bridge
+
+volumes:
+  history-db:

@@ -21,8 +21,4 @@ tech.*
 dist/
 
 # temp
-docker/
-docker-compose.*
-config.toml
-backend/coverage
 Dockerfile
