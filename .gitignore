@@ -1,5 +1,6 @@
 # frontend
 node_modules
+package-lock.json
 
 # logs
 *.log
@@ -18,3 +19,13 @@ tech.*
 
 # deploy
 dist/
+
+# temp
+frontend/
+docker/
+docker-compose.*
+config.toml
+backend/gateway/
+backend/interpolation/
+backend/coverage
+backend/history/
