@@ -21,7 +21,6 @@ tech.*
 dist/
 
 # temp
-frontend/
 docker/
 docker-compose.*
 config.toml
