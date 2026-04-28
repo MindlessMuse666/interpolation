@@ -191,6 +191,12 @@ func setupRabbitMQ() {
 	log.Info().Msg("RabbitMQ consumer started")
 }
 
+// @Summary Получить историю вычислений
+// @Description Возвращает последние 10 записей из истории интерполяций.
+// @Produce json
+// @Success 200 {array} CalculationRecord
+// @Failure 500 {object} map[string]string "Ошибка при получении истории"
+// @Router /history [get]
 func handleGetHistory(c *gin.Context) {
 	rows, err := db.Query("SELECT id, method, points, target_x, result, created_at FROM calculations ORDER BY created_at DESC LIMIT 10")
 	if err != nil {

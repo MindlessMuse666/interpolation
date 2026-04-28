@@ -36,10 +36,10 @@ type InterpolateRequest struct {
 }
 
 type InterpolateResponse struct {
-	Method  string                `json:"method"`
-	Result  float64               `json:"result"`
-	Curve   []interpolation.Point `json:"curve"`
-	Cached  bool                  `json:"cached"`
+	Method string                `json:"method"`
+	Result float64               `json:"result"`
+	Curve  []interpolation.Point `json:"curve"`
+	Cached bool                  `json:"cached"`
 }
 
 type CalculationEvent struct {
@@ -156,6 +156,15 @@ func publishEvent(req InterpolateRequest, result float64) {
 	}
 }
 
+// @Summary Интерполяция данных
+// @Description Вычисляет значение y для заданного x, используя выбранный метод интерполяции, и возвращает точки для графика.
+// @Accept json
+// @Produce json
+// @Param request body InterpolateRequest true "Параметры интерполяции"
+// @Success 200 {object} InterpolateResponse
+// @Failure 400 {object} map[string]string "Неверный формат данных или неизвестный метод"
+// @Failure 500 {object} map[string]string "Внутренняя ошибка сервера"
+// @Router /interpolate [post]
 func handleInterpolate(c *gin.Context) {
 	var req InterpolateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

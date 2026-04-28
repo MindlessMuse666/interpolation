@@ -15,13 +15,53 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/methods": {
+        "/history": {
             "get": {
-                "description": "Returns supported interpolation methods",
+                "description": "Проксирует запрос к сервису истории.",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get list of interpolation methods",
+                "summary": "Получить историю",
+                "responses": {
+                    "200": {
+                        "description": "Список записей истории",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/interpolate": {
+            "post": {
+                "description": "Проксирует запрос к сервису интерполяции для вычисления значения.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Интерполяция данных",
+                "responses": {
+                    "200": {
+                        "description": "Успешное вычисление",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/methods": {
+            "get": {
+                "description": "Возвращает список поддерживаемых методов интерполяции (linear, lagrange, newton).",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Список доступных методов",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -45,7 +85,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Interpolation API",
-	Description:      "API Gateway for Interpolation educational project.",
+	Description:      "API Gateway для учебного проекта по интерполяции.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

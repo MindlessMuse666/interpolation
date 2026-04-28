@@ -2,13 +2,40 @@ basePath: /api/v1
 host: localhost:8080
 info:
   contact: {}
-  description: API Gateway for Interpolation educational project.
+  description: API Gateway для учебного проекта по интерполяции.
   title: Interpolation API
   version: "1.0"
 paths:
+  /history:
+    get:
+      description: Проксирует запрос к сервису истории.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список записей истории
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Получить историю
+  /interpolate:
+    post:
+      consumes:
+      - application/json
+      description: Проксирует запрос к сервису интерполяции для вычисления значения.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное вычисление
+          schema:
+            type: string
+      summary: Интерполяция данных
   /methods:
     get:
-      description: Returns supported interpolation methods
+      description: Возвращает список поддерживаемых методов интерполяции (linear,
+        lagrange, newton).
       produces:
       - application/json
       responses:
@@ -18,5 +45,5 @@ paths:
             items:
               type: string
             type: array
-      summary: Get list of interpolation methods
+      summary: Список доступных методов
 swagger: "2.0"

@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API Gateway for Interpolation educational project.",
+        "description": "API Gateway для учебного проекта по интерполяции.",
         "title": "Interpolation API",
         "contact": {},
         "version": "1.0"
@@ -9,13 +9,53 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
-        "/methods": {
+        "/history": {
             "get": {
-                "description": "Returns supported interpolation methods",
+                "description": "Проксирует запрос к сервису истории.",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get list of interpolation methods",
+                "summary": "Получить историю",
+                "responses": {
+                    "200": {
+                        "description": "Список записей истории",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/interpolate": {
+            "post": {
+                "description": "Проксирует запрос к сервису интерполяции для вычисления значения.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Интерполяция данных",
+                "responses": {
+                    "200": {
+                        "description": "Успешное вычисление",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/methods": {
+            "get": {
+                "description": "Возвращает список поддерживаемых методов интерполяции (linear, lagrange, newton).",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Список доступных методов",
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -26,7 +26,7 @@ import (
 
 // @title Interpolation API
 // @version 1.0
-// @description API Gateway for Interpolation educational project.
+// @description API Gateway для учебного проекта по интерполяции.
 // @host localhost:8080
 // @BasePath /api/v1
 
@@ -57,16 +57,20 @@ func init() {
 }
 
 func proxyHandler(target string) gin.HandlerFunc {
-	url, _ := url.Parse(target)
-	proxy := httputil.NewSingleHostReverseProxy(url)
+	targetURL, _ := url.Parse(target)
+	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+		Scheme: targetURL.Scheme,
+		Host:   targetURL.Host,
+	})
 
 	return func(c *gin.Context) {
+		c.Request.URL.Path = targetURL.Path
 		proxy.ServeHTTP(c.Writer, c.Request)
 	}
 }
 
-// @Summary Get list of interpolation methods
-// @Description Returns supported interpolation methods
+// @Summary Список доступных методов
+// @Description Возвращает список поддерживаемых методов интерполяции (linear, lagrange, newton).
 // @Produce json
 // @Success 200 {array} string
 // @Router /methods [get]
@@ -122,6 +126,21 @@ func setupRateLimiter() gin.HandlerFunc {
 	}
 }
 
+// @Summary Интерполяция данных
+// @Description Проксирует запрос к сервису интерполяции для вычисления значения.
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "Успешное вычисление"
+// @Router /interpolate [post]
+func handleInterpolateProxy(c *gin.Context) {}
+
+// @Summary Получить историю
+// @Description Проксирует запрос к сервису истории.
+// @Produce json
+// @Success 200 {array} string "Список записей истории"
+// @Router /history [get]
+func handleHistoryProxy(c *gin.Context) {}
+
 func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
@@ -155,8 +174,10 @@ func main() {
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("/methods", handleMethods)
-		v1.POST("/interpolate", proxyHandler(cfg.Gateway.InterpolationURL))
-		v1.GET("/history", proxyHandler(cfg.Gateway.HistoryURL))
+		// @Router /interpolate [post]
+		v1.POST("/interpolate", proxyHandler(cfg.Gateway.InterpolationURL+"/api/v1/interpolate"))
+		// @Router /history [get]
+		v1.GET("/history", proxyHandler(cfg.Gateway.HistoryURL+"/api/v1/history"))
 	}
 
 	// Swagger
