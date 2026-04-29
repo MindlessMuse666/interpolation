@@ -19,13 +19,53 @@
 
 ## Обучающее приложение "Численные методы. Интерполяция"  
 
-### Рабочее название: interpolation  
-
-**Тип архитектуры:** Event-Driven Architecture (EDA) + элементы MSA  
-**Дисциплина:** Технология разработки программного обеспечения  
-**Курсовая работа:** Проектирование и разработка обучающего приложения по теме: Численные методы. Интерполяция  
-**Преподаватель:** Томашеевич Александр Андреевич  
-**Дата:** 2026-04-28  
+<table style="border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1)">
+  <tr style="background: #E88CA5;">
+    <td colspan="2" style="padding: 16px 24px; text-align: center; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; color: white;">
+      ✨ Рабочее название: interpolation ✨
+    </td>
+  </tr>
+  <tr style="border-bottom: 1px solid #E2E8F0;">
+    <td style="padding: 14px 20px; width: 35%; font-weight: 700; background: #F8F6F9; color: #1E293B;">
+      🏛️ Тип архитектуры
+    </td>
+    <td style="padding: 14px 20px; color: #1E293B;">
+      Event-Driven Architecture (EDA) + элементы MSA
+    </td>
+  </tr>
+  <tr style="border-bottom: 1px solid #E2E8F0;">
+    <td style="padding: 14px 20px; font-weight: 700; background: #F8F6F9; color: #1E293B;">
+      📘 Дисциплина
+    </td>
+    <td style="padding: 14px 20px; color: #1E293B;">
+      Технология разработки программного обеспечения
+    </td>
+  </tr>
+  <tr style="border-bottom: 1px solid #E2E8F0;">
+    <td style="padding: 14px 20px; font-weight: 700; background: #F8F6F9; color: #1E293B;">
+      📌 Курсовой проект
+    </td>
+    <td style="padding: 14px 20px; color: #1E293B;">
+      Проектирование и разработка обучающего приложения по теме: Численные методы. Интерполяция
+    </td>
+  </tr>
+  <tr style="border-bottom: 1px solid #E2E8F0;">
+    <td style="padding: 14px 20px; font-weight: 700; background: #F8F6F9; color: #1E293B;">
+      👨‍🏫 Преподаватель
+    </td>
+    <td style="padding: 14px 20px; color: #1E293B;">
+      Томашеевич Александр Андреевич
+    </td>
+  </tr>
+  <tr>
+    <td style="padding: 14px 20px; font-weight: 700; background: #F8F6F9; color: #1E293B;">
+      📅 Дата
+    </td>
+    <td style="padding: 14px 20px; color: #1E293B;">
+      2026-04-29
+    </td>
+  </tr>
+</table>
 
 ---
 
