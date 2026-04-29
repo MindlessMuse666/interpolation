@@ -9,9 +9,6 @@ package-lock.json
 .env
 env
 
-# docs
-tech.*
-
 # ide
 .vscode/
 .vs/
