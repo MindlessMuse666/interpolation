@@ -87,7 +87,35 @@
                           @click="checkAnswer(task.id)"
                         >Проверить</v-btn>
                       </v-col>
+                      <v-col cols="12" md="1" class="text-center">
+                        <v-tooltip location="top">
+                          <template v-slot:activator="{ props }">
+                            <v-icon v-bind="props" color="secondary" size="24">mdi-help-circle-outline</v-icon>
+                          </template>
+                          <span>Требуемая точность: ±{{ task.precision || 0.01 }}</span>
+                        </v-tooltip>
+                      </v-col>
                     </v-row>
+                    
+                    <v-expand-transition>
+                      <div v-if="results[task.id] === true" class="mt-6">
+                        <div class="text-subtitle-2 font-weight-bold mb-3 text-success d-flex align-center">
+                          <v-icon size="18" class="mr-2">mdi-chart-line</v-icon>
+                          Визуализация решения
+                        </div>
+                        <v-card variant="outlined" class="pa-2 bg-white" height="300">
+                          <div v-if="taskLoading[task.id]" class="d-flex justify-center align-center h-100">
+                            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+                          </div>
+                          <ChartView
+                            v-else-if="taskCurves[task.id]"
+                            :points="task.points"
+                            :curve="taskCurves[task.id]"
+                            :targetPoint="{ x: task.target_x, y: task.correct_answer }"
+                          />
+                        </v-card>
+                      </div>
+                    </v-expand-transition>
                     
                     <v-expand-transition>
                       <div v-if="results[task.id] === false" class="mt-4 text-error text-caption d-flex align-center">
@@ -108,12 +136,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import tasksData from '../tasks.json'
+import ChartView from '../components/ChartView.vue'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1'
 
 const tab = ref('theory')
 const tasks = ref(tasksData)
 const userAnswers = ref({})
 const results = ref({})
+const taskCurves = ref({})
+const taskLoading = ref({})
 
 onMounted(() => {
   const saved = localStorage.getItem('interpolation_practice_results')
@@ -122,6 +156,10 @@ onMounted(() => {
       const parsed = JSON.parse(saved)
       results.value = parsed.results || {}
       userAnswers.value = parsed.answers || {}
+      // For completed tasks, fetch curves on mount
+      Object.keys(results.value).forEach(id => {
+        if (results.value[id]) fetchTaskCurve(parseInt(id))
+      })
     } catch (e) {
       console.error('Failed to load results', e)
     }
@@ -135,22 +173,41 @@ const saveResults = () => {
   }))
 }
 
+const fetchTaskCurve = async (taskId) => {
+  const task = tasks.value.find(t => t.id === taskId)
+  if (!task) return
+
+  taskLoading.value[taskId] = true
+  try {
+    const resp = await axios.post(`${API_URL}/interpolate`, {
+      method: task.method,
+      points: task.points,
+      target_x: task.target_x
+    })
+    taskCurves.value[taskId] = resp.data.curve
+  } catch (err) {
+    console.error('Failed to fetch task curve', err)
+  } finally {
+    taskLoading.value[taskId] = false
+  }
+}
+
 const theory = [
   {
     title: 'Что такое интерполяция?',
-    content: 'Интерполяция — это математический метод нахождения промежуточных значений величины по имеющемуся дискретному набору известных данных. В инженерных расчетах это позволяет восстановить функцию по отдельным точкам измерений.'
+    content: 'Интерполяция — это математический метод нахождения промежуточных значений величины по имеющемуся дискретному набору известных данных. В инженерных расчетах это позволяет восстановить функцию по отдельным точкам измерений. Основная задача состоит в том, чтобы построить функцию $f(x)$, которая проходит точно через заданные узлы $(x_i, y_i)$.'
   },
   {
     title: 'Линейная интерполяция',
-    content: 'Самый простой и интуитивный метод. Мы предполагаем, что между двумя известными точками функция ведет себя как прямая линия. Формула для расчета: y = y0 + (x - x0) * (y1 - y0) / (x1 - x0).'
+    content: 'Самый простой и интуитивный метод. Мы предполагаем, что между двумя известными точками функция ведет себя как прямая линия. Формула для расчета: <span class="formula">y = y_0 + (x - x_0) \cdot \frac{y_1 - y_0}{x_1 - x_0}</span>. Линейная интерполяция проста в реализации, но имеет низкую точность для нелинейных функций.'
   },
   {
     title: 'Полином Лагранжа',
-    content: 'Этот метод строит единый многочлен, который проходит ровно через все заданные точки. Он элегантен математически, но при большом количестве точек может давать сильные осцилляции на краях интервала (эффект Рунге).'
+    content: 'Этот метод строит единый многочлен степени $n$, который проходит ровно через все $n+1$ заданные точки. Формула полинома Лагранжа: <span class="formula">L(x) = \sum_{i=0}^{n} y_i \prod_{j=0, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}</span>. Он элегантен математически, но при большом количестве точек может давать сильные осцилляции на краях интервала (эффект Рунге).'
   },
   {
     title: 'Полином Ньютона',
-    content: 'В отличие от Лагранжа, метод Ньютона строится итеративно с помощью разделенных разностей. Главное преимущество: при добавлении новой точки данных не нужно пересчитывать весь полином заново — достаточно добавить одно новое слагаемое.'
+    content: 'В отличие от Лагранжа, метод Ньютона строится итеративно с помощью разделенных разностей. Общий вид: <span class="formula">P_n(x) = f(x_0) + (x-x_0)f(x_0, x_1) + \dots + (x-x_0)\dots(x-x_{n-1})f(x_0, \dots, x_n)</span>. Главное преимущество: при добавлении новой точки данных не нужно пересчитывать весь полином заново — достаточно добавить одно новое слагаемое.'
   }
 ]
 
@@ -159,9 +216,13 @@ const checkAnswer = (id) => {
   const userVal = userAnswers.value[id]
   if (userVal === undefined || userVal === '') return
 
-  const isCorrect = Math.abs(userVal - task.correct_answer) < 0.01
+  const isCorrect = Math.abs(userVal - task.correct_answer) < (task.precision || 0.01)
   results.value[id] = isCorrect
   saveResults()
+  
+  if (isCorrect) {
+    fetchTaskCurve(id)
+  }
 }
 
 const getAnswerColor = (id) => {

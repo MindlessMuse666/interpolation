@@ -78,6 +78,18 @@ body {
   font-family: var(--font-mono) !important;
 }
 
+.formula {
+  display: inline-block;
+  background-color: var(--color-rem-blue-light);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: #1E293B;
+  border: 1px solid rgba(94, 157, 200, 0.2);
+  margin: 0 4px;
+}
+
 .glass-header {
   backdrop-filter: blur(12px);
   background-color: rgba(248, 246, 249, 0.85) !important;
