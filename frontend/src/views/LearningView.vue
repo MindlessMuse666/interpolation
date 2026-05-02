@@ -47,7 +47,7 @@
                           v-if="section.notes?.length"
                           multiple
                           variant="accordion"
-                          class="mt-4"
+                          class="mt-4 notes-panels"
                           @update:modelValue="renderTheoryMath"
                         >
                           <v-expansion-panel
@@ -189,7 +189,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, watch, nextTick, defineComponent, h } from 'vue'
 import axios from 'axios'
 import tasksData from '../tasks.json'
 import ChartView from '../components/ChartView.vue'
@@ -274,132 +274,146 @@ const fetchTaskCurve = async (taskId) => {
   }
 }
 
-const IllustrationPointsCurve = {
-  name: 'IllustrationPointsCurve',
-  template: `
-    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Точки и интерполяционная кривая">
-      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
-      <g stroke="#E2E8F0" stroke-width="1">
-        <path d="M36 20V194M36 194H336" />
-        <path d="M36 158H336" />
-        <path d="M36 122H336" />
-        <path d="M36 86H336" />
-        <path d="M36 50H336" />
-      </g>
-      <path d="M56 156 C 110 40, 160 200, 214 96 S 304 68, 324 98" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
-      <g fill="#E88CA5">
-        <circle cx="56" cy="156" r="6"/>
-        <circle cx="128" cy="74" r="6"/>
-        <circle cx="214" cy="96" r="6"/>
-        <circle cx="288" cy="78" r="6"/>
-        <circle cx="324" cy="98" r="6"/>
-      </g>
-    </svg>
-  `
-}
+/**
+ * Создаёт Vue-компонент иллюстрации на базе заранее подготовленного SVG.
+ * @param {string} name
+ * @param {string} svgMarkup
+ * @returns {import('vue').Component}
+ */
+const createSvgIllustrationComponent = (name, svgMarkup) =>
+  defineComponent({
+    name,
+    setup() {
+      return () => h('div', { class: 'illustration-svg', innerHTML: svgMarkup })
+    }
+  })
 
-const IllustrationLinear = {
-  name: 'IllustrationLinear',
-  template: `
-    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Линейная интерполяция">
-      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
-      <g stroke="#E2E8F0" stroke-width="1">
-        <path d="M36 20V194M36 194H336" />
-      </g>
-      <path d="M72 160 L 300 70" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
-      <g fill="#E88CA5">
-        <circle cx="72" cy="160" r="7"/>
-        <circle cx="300" cy="70" r="7"/>
-      </g>
-      <g fill="#3BAB7B">
-        <circle cx="186" cy="115" r="7"/>
-      </g>
-      <text x="186" y="142" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#64748B">промежуточная точка</text>
-    </svg>
+const IllustrationPointsCurve = createSvgIllustrationComponent(
+  'IllustrationPointsCurve',
   `
-}
+<svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Точки и интерполяционная кривая">
+  <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+  <g stroke="#E2E8F0" stroke-width="1">
+    <path d="M36 20V194M36 194H336" />
+    <path d="M36 158H336" />
+    <path d="M36 122H336" />
+    <path d="M36 86H336" />
+    <path d="M36 50H336" />
+  </g>
+  <path d="M56 156 C 110 40, 160 200, 214 96 S 304 68, 324 98" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#E88CA5">
+    <circle cx="56" cy="156" r="6"/>
+    <circle cx="128" cy="74" r="6"/>
+    <circle cx="214" cy="96" r="6"/>
+    <circle cx="288" cy="78" r="6"/>
+    <circle cx="324" cy="98" r="6"/>
+  </g>
+</svg>
+  `.trim()
+)
 
-const IllustrationDividedDiff = {
-  name: 'IllustrationDividedDiff',
-  template: `
-    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Разделённые разности">
-      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
-      <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
-        <rect x="36" y="42" width="288" height="148" rx="10"/>
-      </g>
-      <g stroke="#E2E8F0" stroke-width="1">
-        <path d="M36 78H324M36 114H324M36 150H324" />
-        <path d="M108 42V190M180 42V190M252 42V190" />
-      </g>
-      <g font-family="JetBrains Mono, monospace" font-size="12" fill="#1E293B">
-        <text x="54" y="66">x</text>
-        <text x="126" y="66">f</text>
-        <text x="198" y="66">Δ1</text>
-        <text x="270" y="66">Δ2</text>
-        <text x="54" y="102">0</text>
-        <text x="126" y="102">1</text>
-        <text x="54" y="138">1</text>
-        <text x="126" y="138">3</text>
-        <text x="54" y="174">2</text>
-        <text x="126" y="174">2</text>
-      </g>
-      <path d="M196 116 L 268 152" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
-      <path d="M196 152 L 268 116" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
-    </svg>
+const IllustrationLinear = createSvgIllustrationComponent(
+  'IllustrationLinear',
   `
-}
+<svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Линейная интерполяция">
+  <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+  <g stroke="#E2E8F0" stroke-width="1">
+    <path d="M36 20V194M36 194H336" />
+  </g>
+  <path d="M72 160 L 300 70" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#E88CA5">
+    <circle cx="72" cy="160" r="7"/>
+    <circle cx="300" cy="70" r="7"/>
+  </g>
+  <g fill="#3BAB7B">
+    <circle cx="186" cy="115" r="7"/>
+  </g>
+  <text x="186" y="142" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#64748B">промежуточная точка</text>
+</svg>
+  `.trim()
+)
 
-const IllustrationRunge = {
-  name: 'IllustrationRunge',
-  template: `
-    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Эффект Рунге">
-      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
-      <g stroke="#E2E8F0" stroke-width="1">
-        <path d="M36 20V194M36 194H336" />
-        <path d="M36 110H336" />
-      </g>
-      <path d="M48 130 C 90 90, 120 70, 160 90 S 240 150, 300 130" fill="none" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
-      <path d="M48 130 C 90 40, 130 190, 160 70 S 220 170, 240 60 S 300 200, 324 120" fill="none" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
-      <text x="48" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">истинная функция</text>
-      <text x="180" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">полином высокой степени</text>
-    </svg>
+const IllustrationDividedDiff = createSvgIllustrationComponent(
+  'IllustrationDividedDiff',
   `
-}
+<svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Разделённые разности">
+  <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+  <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
+    <rect x="36" y="42" width="288" height="148" rx="10"/>
+  </g>
+  <g stroke="#E2E8F0" stroke-width="1">
+    <path d="M36 78H324M36 114H324M36 150H324" />
+    <path d="M108 42V190M180 42V190M252 42V190" />
+  </g>
+  <g font-family="JetBrains Mono, monospace" font-size="12" fill="#1E293B">
+    <text x="54" y="66">x</text>
+    <text x="126" y="66">f</text>
+    <text x="198" y="66">Δ1</text>
+    <text x="270" y="66">Δ2</text>
+    <text x="54" y="102">0</text>
+    <text x="126" y="102">1</text>
+    <text x="54" y="138">1</text>
+    <text x="126" y="138">3</text>
+    <text x="54" y="174">2</text>
+    <text x="126" y="174">2</text>
+  </g>
+  <path d="M196 116 L 268 152" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M196 152 L 268 116" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
+</svg>
+  `.trim()
+)
 
-const IllustrationCompare = {
-  name: 'IllustrationCompare',
-  template: `
-    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Сравнение Лагранжа и Ньютона">
-      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
-      <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
-        <rect x="28" y="38" width="144" height="144" rx="12"/>
-        <rect x="188" y="38" width="144" height="144" rx="12"/>
-      </g>
-      <g font-family="Inter, sans-serif" font-size="12" fill="#1E293B" font-weight="700">
-        <text x="100" y="62" text-anchor="middle">Лагранж</text>
-        <text x="260" y="62" text-anchor="middle">Ньютон</text>
-      </g>
-      <g stroke="#E88CA5" stroke-width="3" stroke-linecap="round">
-        <path d="M50 150 C 70 90, 110 90, 130 150" fill="none"/>
-        <circle cx="66" cy="118" r="4" fill="#E88CA5"/>
-        <circle cx="98" cy="108" r="4" fill="#E88CA5"/>
-        <circle cx="128" cy="148" r="4" fill="#E88CA5"/>
-      </g>
-      <g stroke="#5E9DC8" stroke-width="3" stroke-linecap="round">
-        <path d="M210 150 L 230 120 L 250 135 L 270 105 L 290 120" fill="none"/>
-        <circle cx="210" cy="150" r="4" fill="#5E9DC8"/>
-        <circle cx="230" cy="120" r="4" fill="#5E9DC8"/>
-        <circle cx="250" cy="135" r="4" fill="#5E9DC8"/>
-        <circle cx="270" cy="105" r="4" fill="#5E9DC8"/>
-        <circle cx="290" cy="120" r="4" fill="#5E9DC8"/>
-      </g>
-      <g font-family="Inter, sans-serif" font-size="11" fill="#64748B">
-        <text x="100" y="194" text-anchor="middle">единый полином</text>
-        <text x="260" y="194" text-anchor="middle">наращивание по шагам</text>
-      </g>
-    </svg>
+const IllustrationRunge = createSvgIllustrationComponent(
+  'IllustrationRunge',
   `
-}
+<svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Эффект Рунге">
+  <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+  <g stroke="#E2E8F0" stroke-width="1">
+    <path d="M36 20V194M36 194H336" />
+    <path d="M36 110H336" />
+  </g>
+  <path d="M48 130 C 90 90, 120 70, 160 90 S 240 150, 300 130" fill="none" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
+  <path d="M48 130 C 90 40, 130 190, 160 70 S 220 170, 240 60 S 300 200, 324 120" fill="none" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
+  <text x="48" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">истинная функция</text>
+  <text x="180" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">полином высокой степени</text>
+</svg>
+  `.trim()
+)
+
+const IllustrationCompare = createSvgIllustrationComponent(
+  'IllustrationCompare',
+  `
+<svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Сравнение Лагранжа и Ньютона">
+  <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+  <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
+    <rect x="28" y="38" width="144" height="144" rx="12"/>
+    <rect x="188" y="38" width="144" height="144" rx="12"/>
+  </g>
+  <g font-family="Inter, sans-serif" font-size="12" fill="#1E293B" font-weight="700">
+    <text x="100" y="62" text-anchor="middle">Лагранж</text>
+    <text x="260" y="62" text-anchor="middle">Ньютон</text>
+  </g>
+  <g stroke="#E88CA5" stroke-width="3" stroke-linecap="round">
+    <path d="M50 150 C 70 90, 110 90, 130 150" fill="none"/>
+    <circle cx="66" cy="118" r="4" fill="#E88CA5"/>
+    <circle cx="98" cy="108" r="4" fill="#E88CA5"/>
+    <circle cx="128" cy="148" r="4" fill="#E88CA5"/>
+  </g>
+  <g stroke="#5E9DC8" stroke-width="3" stroke-linecap="round">
+    <path d="M210 150 L 230 120 L 250 135 L 270 105 L 290 120" fill="none"/>
+    <circle cx="210" cy="150" r="4" fill="#5E9DC8"/>
+    <circle cx="230" cy="120" r="4" fill="#5E9DC8"/>
+    <circle cx="250" cy="135" r="4" fill="#5E9DC8"/>
+    <circle cx="270" cy="105" r="4" fill="#5E9DC8"/>
+    <circle cx="290" cy="120" r="4" fill="#5E9DC8"/>
+  </g>
+  <g font-family="Inter, sans-serif" font-size="11" fill="#64748B">
+    <text x="100" y="194" text-anchor="middle">единый полином</text>
+    <text x="260" y="194" text-anchor="middle">наращивание по шагам</text>
+  </g>
+</svg>
+  `.trim()
+)
 
 const theorySections = [
   {
@@ -689,9 +703,24 @@ onMounted(async () => {
   overflow: hidden;
   box-shadow: var(--shadow-card);
 }
+:deep(.illustration-svg svg) {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 .note-panel {
   border: 1px solid #E2E8F0;
   border-radius: 12px;
   overflow: hidden;
+}
+.notes-panels :deep(.v-expansion-panel)::before {
+  opacity: 0 !important;
+  border-top: 0 !important;
+}
+.notes-panels :deep(.v-expansion-panel) {
+  margin-top: 12px;
+}
+.notes-panels :deep(.v-expansion-panel:first-child) {
+  margin-top: 0;
 }
 </style>

@@ -14,7 +14,6 @@
           <v-btn to="/sandbox" variant="text" class="nav-btn" :active-class="'nav-btn-active'">Песочница</v-btn>
         </div>
 
-        <!-- Mobile Menu -->
         <v-menu class="d-flex d-sm-none">
           <template v-slot:activator="{ props }">
             <v-btn icon="mdi-menu" variant="text" v-bind="props" class="d-sm-none"></v-btn>
@@ -35,7 +34,7 @@
       <router-view></router-view>
     </v-main>
 
-    <v-footer app color="surface" class="border-t-thin justify-center footer-sticky">
+    <v-footer color="surface" class="border-t-thin justify-center">
       <v-container class="pa-0 px-4 fill-height d-flex flex-column align-center justify-center" fluid>
         <div class="d-flex align-center mb-1">
           <v-avatar size="20" class="mr-2 opacity-70">
