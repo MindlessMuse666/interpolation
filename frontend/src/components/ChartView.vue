@@ -65,7 +65,8 @@ const chartData = computed(() => {
       backgroundColor: '#E88CA5',
       borderColor: '#E88CA5',
       showLine: false,
-      pointRadius: 6,
+      pointRadius: 5,
+      pointHoverRadius: 6,
       type: 'scatter',
       order: 1
     }
@@ -104,13 +105,57 @@ const chartData = computed(() => {
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        color: '#64748B',
+        font: {
+          family: 'Inter, sans-serif',
+          size: 12,
+          weight: '600'
+        },
+        boxWidth: 12,
+        boxHeight: 12
+      }
+    },
+    tooltip: {
+      enabled: true,
+      bodyFont: { family: 'Inter, sans-serif' },
+      titleFont: { family: 'Inter, sans-serif' }
+    }
+  },
+  interaction: {
+    mode: 'nearest',
+    intersect: false
+  },
   scales: {
     x: {
       type: 'linear',
-      position: 'bottom'
+      position: 'bottom',
+      grid: {
+        color: '#E2E8F0'
+      },
+      ticks: {
+        color: '#64748B',
+        font: {
+          family: 'Inter, sans-serif',
+          size: 12
+        }
+      }
     },
     y: {
-      type: 'linear'
+      type: 'linear',
+      grid: {
+        color: '#E2E8F0'
+      },
+      ticks: {
+        color: '#64748B',
+        font: {
+          family: 'Inter, sans-serif',
+          size: 12
+        }
+      }
     }
   }
 }
@@ -119,5 +164,10 @@ const chartOptions = {
 <style scoped>
 .chart-container {
   width: 100%;
+  background: #FFFFFF;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1px solid #E2E8F0;
 }
 </style>

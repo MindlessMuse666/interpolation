@@ -10,8 +10,8 @@ const remRamTheme = {
   colors: {
     background: '#F8F6F9',
     surface: '#FFFFFF',
-    primary: '#E88CA5',    // Ram Pink
-    secondary: '#5E9DC8',  // Rem Blue
+    primary: '#E88CA5',
+    secondary: '#5E9DC8',
     error: '#DC5A5A',
     success: '#3BAB7B',
     warning: '#EA9A4A',
@@ -28,6 +28,8 @@ const remRamTheme = {
   },
   variables: {
     'border-radius-root': '8px',
+    'font-family-root': '"Inter", sans-serif',
+    'font-family-mono': '"JetBrains Mono", monospace'
   }
 }
 

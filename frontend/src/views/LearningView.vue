@@ -10,23 +10,72 @@
 
           <v-card-text class="pa-6">
             <v-window v-model="tab">
-              <!-- Theory -->
               <v-window-item value="theory">
                 <div ref="theoryRoot">
-                  <div v-for="(t, index) in theory" :key="t.title" class="mb-10">
-                  <div class="d-flex align-center mb-4">
-                    <v-icon :color="index % 2 === 0 ? 'primary' : 'secondary'" size="32" class="mr-3">
-                      {{ index % 2 === 0 ? 'mdi-book-open-variant' : 'mdi-lightbulb-on-outline' }}
-                    </v-icon>
-                    <h2 class="text-h4 font-weight-bold">{{ t.title }}</h2>
-                  </div>
-                    <div class="text-body-1 text-text-primary leading-relaxed mb-4" v-html="t.content"></div>
-                    <v-divider v-if="index < theory.length - 1" class="mt-8"></v-divider>
-                  </div>
+                  <v-card
+                    v-for="section in theorySections"
+                    :key="section.id"
+                    variant="flat"
+                    class="pa-6 mb-8 theory-card"
+                  >
+                    <div class="d-flex align-center mb-4">
+                      <v-icon :color="section.accentColor" size="30" class="mr-3">{{ section.icon }}</v-icon>
+                      <h2 class="text-h5 text-md-h4 font-weight-bold text-text-primary">{{ section.title }}</h2>
+                    </div>
+
+                    <v-row class="align-start" dense>
+                      <v-col cols="12" md="7">
+                        <div class="text-body-1 leading-relaxed text-text-primary">
+                          <div
+                            v-for="(p, idx) in section.paragraphsHtml"
+                            :key="`${section.id}-p-${idx}`"
+                            class="mb-3"
+                            v-html="p"
+                          ></div>
+                        </div>
+
+                        <v-sheet
+                          v-if="section.formulaLatex"
+                          class="formula-block mt-4 mb-2"
+                          rounded="lg"
+                          border
+                        >
+                          <div class="math-font text-body-1" v-html="section.formulaLatex"></div>
+                        </v-sheet>
+
+                        <v-expansion-panels
+                          v-if="section.notes?.length"
+                          multiple
+                          variant="accordion"
+                          class="mt-4"
+                          @update:modelValue="renderTheoryMath"
+                        >
+                          <v-expansion-panel
+                            v-for="(note, noteIdx) in section.notes"
+                            :key="`${section.id}-note-${noteIdx}`"
+                            class="note-panel"
+                          >
+                            <v-expansion-panel-title class="text-subtitle-2 font-weight-bold text-text-primary">
+                              <v-icon :color="section.accentColor" size="18" class="mr-2">mdi-note-text-outline</v-icon>
+                              {{ note.title }}
+                            </v-expansion-panel-title>
+                            <v-expansion-panel-text>
+                              <div class="text-body-2 leading-relaxed text-text-primary" v-html="note.bodyHtml"></div>
+                            </v-expansion-panel-text>
+                          </v-expansion-panel>
+                        </v-expansion-panels>
+                      </v-col>
+
+                      <v-col cols="12" md="5" class="mt-5 mt-md-0">
+                        <div class="illustration-card">
+                          <component :is="section.illustrationComponent" />
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-card>
                 </div>
               </v-window-item>
 
-              <!-- Practice -->
               <v-window-item value="practice">
                 <div v-for="task in tasks" :key="task.id" class="mb-10">
                   <v-card variant="flat" class="pa-6 border-thin bg-surface-light rounded-xl">
@@ -105,6 +154,16 @@
                             :height="320"
                           />
                         </v-card>
+
+                        <v-alert
+                          v-if="taskExplanations[task.id]"
+                          type="info"
+                          variant="tonal"
+                          color="secondary"
+                          class="mt-4 rounded-lg"
+                        >
+                          <div class="text-body-2 leading-relaxed" v-html="taskExplanations[task.id]"></div>
+                        </v-alert>
                       </div>
                     </v-expand-transition>
                     
@@ -122,6 +181,10 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-snackbar v-model="snackbar.open" :color="snackbar.color" timeout="3500">
+      {{ snackbar.message }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -140,25 +203,24 @@ const userAnswers = ref({})
 const results = ref({})
 const taskCurves = ref({})
 const taskLoading = ref({})
+const taskExplanations = ref({})
 const theoryRoot = ref(null)
+const snackbar = ref({ open: false, message: '', color: 'error' })
 
-onMounted(() => {
-  const saved = localStorage.getItem('interpolation_practice_results')
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved)
-      results.value = parsed.results || {}
-      userAnswers.value = parsed.answers || {}
-      // For completed tasks, fetch curves on mount
-      Object.keys(results.value).forEach(id => {
-        if (results.value[id]) fetchTaskCurve(parseInt(id))
-      })
-    } catch (e) {
-      console.error('Failed to load results', e)
-    }
-  }
-})
+/**
+ * Показывает короткое сообщение пользователю.
+ * @param {string} message
+ * @param {'error'|'warning'|'success'|'info'} [color='error']
+ */
+const notify = (message, color = 'error') => {
+  snackbar.value = { open: true, message, color }
+}
 
+/**
+ * Рендерит формулы KaTeX внутри теоретического блока.
+ * Важно вызывать после изменения DOM (nextTick), иначе формулы могут не найтись.
+ * @returns {Promise<void>}
+ */
 const renderTheoryMath = async () => {
   if (tab.value !== 'theory') return
   await nextTick()
@@ -178,17 +240,20 @@ watch(tab, () => {
   renderTheoryMath()
 })
 
-onMounted(() => {
-  renderTheoryMath()
-})
-
+/**
+ * Сохраняет прогресс по заданиям в localStorage.
+ * @returns {void}
+ */
 const saveResults = () => {
-  localStorage.setItem('interpolation_practice_results', JSON.stringify({
-    results: results.value,
-    answers: userAnswers.value
-  }))
+  const payload = { results: results.value, answers: userAnswers.value }
+  localStorage.setItem('interpolation_practice_results', JSON.stringify(payload))
 }
 
+/**
+ * Загружает интерполяционную кривую для задания через backend API.
+ * @param {number} taskId
+ * @returns {Promise<void>}
+ */
 const fetchTaskCurve = async (taskId) => {
   const task = tasks.value.find(t => t.id === taskId)
   if (!task) return
@@ -200,30 +265,303 @@ const fetchTaskCurve = async (taskId) => {
       points: task.points,
       target_x: task.target_x
     })
-    taskCurves.value[taskId] = resp.data.curve
+    taskCurves.value[taskId] = Array.isArray(resp.data?.curve) ? resp.data.curve : []
   } catch (err) {
-    console.error('Failed to fetch task curve', err)
+    taskCurves.value[taskId] = []
+    notify('Не удалось загрузить кривую для графика. Попробуйте ещё раз.', 'warning')
   } finally {
     taskLoading.value[taskId] = false
   }
 }
 
-const theory = [
+const IllustrationPointsCurve = {
+  name: 'IllustrationPointsCurve',
+  template: `
+    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Точки и интерполяционная кривая">
+      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+      <g stroke="#E2E8F0" stroke-width="1">
+        <path d="M36 20V194M36 194H336" />
+        <path d="M36 158H336" />
+        <path d="M36 122H336" />
+        <path d="M36 86H336" />
+        <path d="M36 50H336" />
+      </g>
+      <path d="M56 156 C 110 40, 160 200, 214 96 S 304 68, 324 98" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
+      <g fill="#E88CA5">
+        <circle cx="56" cy="156" r="6"/>
+        <circle cx="128" cy="74" r="6"/>
+        <circle cx="214" cy="96" r="6"/>
+        <circle cx="288" cy="78" r="6"/>
+        <circle cx="324" cy="98" r="6"/>
+      </g>
+    </svg>
+  `
+}
+
+const IllustrationLinear = {
+  name: 'IllustrationLinear',
+  template: `
+    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Линейная интерполяция">
+      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+      <g stroke="#E2E8F0" stroke-width="1">
+        <path d="M36 20V194M36 194H336" />
+      </g>
+      <path d="M72 160 L 300 70" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
+      <g fill="#E88CA5">
+        <circle cx="72" cy="160" r="7"/>
+        <circle cx="300" cy="70" r="7"/>
+      </g>
+      <g fill="#3BAB7B">
+        <circle cx="186" cy="115" r="7"/>
+      </g>
+      <text x="186" y="142" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#64748B">промежуточная точка</text>
+    </svg>
+  `
+}
+
+const IllustrationDividedDiff = {
+  name: 'IllustrationDividedDiff',
+  template: `
+    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Разделённые разности">
+      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+      <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
+        <rect x="36" y="42" width="288" height="148" rx="10"/>
+      </g>
+      <g stroke="#E2E8F0" stroke-width="1">
+        <path d="M36 78H324M36 114H324M36 150H324" />
+        <path d="M108 42V190M180 42V190M252 42V190" />
+      </g>
+      <g font-family="JetBrains Mono, monospace" font-size="12" fill="#1E293B">
+        <text x="54" y="66">x</text>
+        <text x="126" y="66">f</text>
+        <text x="198" y="66">Δ1</text>
+        <text x="270" y="66">Δ2</text>
+        <text x="54" y="102">0</text>
+        <text x="126" y="102">1</text>
+        <text x="54" y="138">1</text>
+        <text x="126" y="138">3</text>
+        <text x="54" y="174">2</text>
+        <text x="126" y="174">2</text>
+      </g>
+      <path d="M196 116 L 268 152" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
+      <path d="M196 152 L 268 116" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+  `
+}
+
+const IllustrationRunge = {
+  name: 'IllustrationRunge',
+  template: `
+    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Эффект Рунге">
+      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+      <g stroke="#E2E8F0" stroke-width="1">
+        <path d="M36 20V194M36 194H336" />
+        <path d="M36 110H336" />
+      </g>
+      <path d="M48 130 C 90 90, 120 70, 160 90 S 240 150, 300 130" fill="none" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
+      <path d="M48 130 C 90 40, 130 190, 160 70 S 220 170, 240 60 S 300 200, 324 120" fill="none" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
+      <text x="48" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">истинная функция</text>
+      <text x="180" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">полином высокой степени</text>
+    </svg>
+  `
+}
+
+const IllustrationCompare = {
+  name: 'IllustrationCompare',
+  template: `
+    <svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Сравнение Лагранжа и Ньютона">
+      <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+      <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
+        <rect x="28" y="38" width="144" height="144" rx="12"/>
+        <rect x="188" y="38" width="144" height="144" rx="12"/>
+      </g>
+      <g font-family="Inter, sans-serif" font-size="12" fill="#1E293B" font-weight="700">
+        <text x="100" y="62" text-anchor="middle">Лагранж</text>
+        <text x="260" y="62" text-anchor="middle">Ньютон</text>
+      </g>
+      <g stroke="#E88CA5" stroke-width="3" stroke-linecap="round">
+        <path d="M50 150 C 70 90, 110 90, 130 150" fill="none"/>
+        <circle cx="66" cy="118" r="4" fill="#E88CA5"/>
+        <circle cx="98" cy="108" r="4" fill="#E88CA5"/>
+        <circle cx="128" cy="148" r="4" fill="#E88CA5"/>
+      </g>
+      <g stroke="#5E9DC8" stroke-width="3" stroke-linecap="round">
+        <path d="M210 150 L 230 120 L 250 135 L 270 105 L 290 120" fill="none"/>
+        <circle cx="210" cy="150" r="4" fill="#5E9DC8"/>
+        <circle cx="230" cy="120" r="4" fill="#5E9DC8"/>
+        <circle cx="250" cy="135" r="4" fill="#5E9DC8"/>
+        <circle cx="270" cy="105" r="4" fill="#5E9DC8"/>
+        <circle cx="290" cy="120" r="4" fill="#5E9DC8"/>
+      </g>
+      <g font-family="Inter, sans-serif" font-size="11" fill="#64748B">
+        <text x="100" y="194" text-anchor="middle">единый полином</text>
+        <text x="260" y="194" text-anchor="middle">наращивание по шагам</text>
+      </g>
+    </svg>
+  `
+}
+
+const theorySections = [
   {
+    id: 'what-is',
     title: 'Что такое интерполяция?',
-    content: String.raw`Интерполяция — это математический метод нахождения промежуточных значений величины по имеющемуся дискретному набору известных данных. В инженерных расчетах это позволяет восстановить функцию по отдельным точкам измерений. Основная задача состоит в том, чтобы построить функцию $f(x)$, которая проходит точно через заданные узлы $(x_i, y_i)$.`
+    icon: 'mdi-book-open-variant',
+    accentColor: 'primary',
+    paragraphsHtml: [
+      'Интерполяция - это способ восстановить значения <strong>между</strong> уже известными точками. Представьте, что у вас есть несколько измерений с датчика, таблица из эксперимента или точки на графике, а между ними есть пробелы. Интерполяция помогает аккуратно заполнить эти пробелы так, чтобы новая функция проходила через все заданные узлы.',
+      'Иначе говоря, мы не пытаемся угадать поведение функции "из воздуха", а строим модель на основе уже известных данных. Это особенно удобно, когда точная формула неизвестна, слишком сложна или отсутствует, но есть надёжные измерения.',
+      'Основная идея: нужно построить функцию \\(f(x)\\), которая проходит точно через точки \\((x_i, y_i)\\).'
+    ],
+    notes: [
+      {
+        title: 'Интерполяция - это не угадывание',
+        bodyHtml:
+          'По сути, мы "восстанавливаем недостающее" между измерениями. Это помогает получать промежуточные значения для расчётов, визуализации и анализа.'
+      },
+      {
+        title: 'Интерполяция vs экстраполяция',
+        bodyHtml:
+          'Интерполяция работает <strong>внутри</strong> диапазона известных точек. Экстраполяция - <strong>за его пределами</strong>, и она обычно заметно менее надёжна.'
+      }
+    ],
+    illustrationComponent: IllustrationPointsCurve
   },
   {
+    id: 'where-used',
+    title: 'Где это применяется',
+    icon: 'mdi-map-marker-path',
+    accentColor: 'secondary',
+    paragraphsHtml: [
+      'Интерполяция используется почти везде, где данные получаются не непрерывно, а отдельными измерениями. В инженерии она встречается в калибровке датчиков, обработке сигналов, робототехнике, авиации, строительстве и моделировании физических процессов.',
+      'Если известны значения температуры в нескольких моментах, интерполяция помогает оценить температуру в промежуточный момент. Если есть табличные данные давления, скорости или яркости - можно восстановить плавную зависимость между ними.'
+    ],
+    notes: [
+      {
+        title: 'Часто работает "за кадром"',
+        bodyHtml:
+          'Интерполяция используется в графике, навигации, обработке сенсорных данных и даже при построении карт погоды - вы просто не замечаете её напрямую.'
+      },
+      {
+        title: 'Почему это удобно в инженерии',
+        bodyHtml:
+          'Когда формула поведения системы неизвестна или неудобна, но есть таблица измерений, интерполяция превращает дискретные точки в удобную модель для расчётов.'
+      }
+    ],
+    illustrationComponent: IllustrationPointsCurve
+  },
+  {
+    id: 'linear',
     title: 'Линейная интерполяция',
-    content: String.raw`Самый простой и интуитивный метод. Мы предполагаем, что между двумя известными точками функция ведет себя как прямая линия. Формула для расчета: <span class="formula">\(y = y_0 + (x - x_0)\cdot \frac{y_1 - y_0}{x_1 - x_0}\)</span>. Линейная интерполяция проста в реализации, но имеет низкую точность для нелинейных функций.`
+    icon: 'mdi-chart-timeline-variant',
+    accentColor: 'primary',
+    paragraphsHtml: [
+      'Линейная интерполяция - самый простой и интуитивный способ оценки промежуточного значения. Мы предполагаем, что между двумя известными точками график идёт по прямой.',
+      'Метод работает быстро, легко программируется и особенно удобен, когда нужно получить ориентировочную оценку без сложных вычислений. Но если зависимость явно искривлена, точность может заметно упасть.'
+    ],
+    formulaLatex: String.raw`<div>\[
+y = y_0 + (x - x_0)\cdot \frac{y_1 - y_0}{x_1 - x_0}
+\]</div>`,
+    notes: [
+      {
+        title: 'Когда метод особенно хорош',
+        bodyHtml:
+          'Когда точки близко друг к другу и зависимость почти прямая, линейная интерполяция даёт надёжный результат при минимальных вычислениях.'
+      },
+      {
+        title: 'Где встречается чаще всего',
+        bodyHtml:
+          'Калибровка датчиков, системы управления, графические и физические расчёты - это один из самых "рабочих" методов в инженерной практике.'
+      }
+    ],
+    illustrationComponent: IllustrationLinear
   },
   {
+    id: 'lagrange',
     title: 'Полином Лагранжа',
-    content: String.raw`Этот метод строит единый многочлен степени $n$, который проходит ровно через все $n+1$ заданные точки. Формула полинома Лагранжа: <span class="formula">\(L(x) = \sum_{i=0}^{n} y_i \prod_{j=0, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}\)</span>. Он элегантен математически, но при большом количестве точек может давать сильные осцилляции на краях интервала (эффект Рунге).`
+    icon: 'mdi-function-variant',
+    accentColor: 'secondary',
+    paragraphsHtml: [
+      'Метод Лагранжа строит <strong>единый многочлен</strong>, который проходит через все заданные точки сразу. Это уже не кусочная оценка, а полиномиальная модель, описывающая весь набор точек одной формулой.',
+      'Метод математически красивый и универсальный, но при большом числе точек полином может начать сильно колебаться, особенно возле краёв интервала - это известно как <strong>эффект Рунге</strong>.'
+    ],
+    formulaLatex: String.raw`<div>\[
+P(x)=\sum_{i=0}^{n} y_i \prod_{j=0, j\neq i}^{n}\frac{x-x_j}{x_i-x_j}
+\]</div>`,
+    notes: [
+      {
+        title: 'Про эффект Рунге',
+        bodyHtml:
+          'Чем выше степень полинома, тем сильнее он может "раскачиваться" на краях интервала, особенно на равномерной сетке узлов.'
+      },
+      {
+        title: 'Немного истории',
+        bodyHtml:
+          'Метод назван в честь Жозефа Луи Лагранжа - одного из крупнейших математиков XVIII века. Его имя встречается во многих разделах математики и физики.'
+      }
+    ],
+    illustrationComponent: IllustrationCompare
   },
   {
+    id: 'newton',
     title: 'Полином Ньютона',
-    content: String.raw`В отличие от Лагранжа, метод Ньютона строится итеративно с помощью разделённых разностей. Общий вид: <span class="formula">\(P_n(x) = f(x_0) + (x-x_0)f[x_0, x_1] + \dots + (x-x_0)\dots(x-x_{n-1})f[x_0, \dots, x_n]\)</span>. Главное преимущество: при добавлении новой точки данных не нужно пересчитывать весь полином заново — достаточно добавить одно новое слагаемое.`
+    icon: 'mdi-table-large',
+    accentColor: 'primary',
+    paragraphsHtml: [
+      'Полином Ньютона тоже строит интерполяционную кривую через заданные точки, но делает это через <strong>разделённые разности</strong>. Его форма удобна тем, что каждый следующий член добавляется постепенно.',
+      'Главное преимущество: при добавлении новой точки не нужно пересчитывать всё с самого начала - достаточно дописать новый член полинома.'
+    ],
+    formulaLatex: String.raw`<div>\[
+P_n(x)=f(x_0)+(x-x_0)f[x_0,x_1]+(x-x_0)(x-x_1)f[x_0,x_1,x_2]+\dots
+\]</div>`,
+    notes: [
+      {
+        title: 'Почему это "инженерно" удобно',
+        bodyHtml:
+          'Если данные поступают постепенно, Ньютона удобно расширять по шагам - старая часть расчёта остаётся, а новая просто добавляется.'
+      },
+      {
+        title: 'Немного истории',
+        bodyHtml:
+          'Подход основан на идеях Исаака Ньютона и таблицах разделённых разностей, поэтому его часто используют в табличных вычислениях.'
+      }
+    ],
+    illustrationComponent: IllustrationDividedDiff
+  },
+  {
+    id: 'choice',
+    title: 'Что выбрать: Лагранж или Ньютон',
+    icon: 'mdi-scale-balance',
+    accentColor: 'secondary',
+    paragraphsHtml: [
+      'Оба метода дают один и тот же интерполяционный полином, если построены по одним и тем же точкам. Разница не в результате, а в форме записи и удобстве вычислений.',
+      'Лагранж хорош как математически прозрачный способ записи, а Ньютон - как более гибкий вариант для поэтапного расширения набора данных.'
+    ],
+    notes: [
+      {
+        title: 'Важно помнить про границы данных',
+        bodyHtml:
+          'Если нужно выйти за пределы известных точек, это уже экстраполяция - и здесь ошибка обычно растёт быстрее.'
+      }
+    ],
+    illustrationComponent: IllustrationCompare
+  },
+  {
+    id: 'runge',
+    title: 'Эффект Рунге',
+    icon: 'mdi-waveform',
+    accentColor: 'primary',
+    paragraphsHtml: [
+      'Эффект Рунге - пример того, что в интерполяции не всегда работает правило "чем больше точек, тем лучше". При использовании полиномов высокой степени на равномерной сетке кривая может начать сильно колебаться на краях интервала.',
+      'На практике поэтому часто выбирают более устойчивые подходы: меньшее число точек, другой выбор узлов или альтернативные методы аппроксимации.'
+    ],
+    notes: [
+      {
+        title: 'Что это даёт на практике',
+        bodyHtml:
+          'Иногда более простой метод даёт более надёжный результат, чем "более умный" на бумаге - особенно при шумных данных и больших наборах узлов.'
+      }
+    ],
+    illustrationComponent: IllustrationRunge
   }
 ]
 
@@ -237,22 +575,31 @@ const triggerConfetti = async () => {
       startVelocity: 35,
       origin: { y: 0.7 }
     })
-  } catch (e) {
-    console.error('Confetti failed', e)
-  }
+  } catch {}
 }
 
+/**
+ * Проверяет ответ пользователя по заданию с учётом допустимой погрешности.
+ * @param {number} id
+ * @returns {void}
+ */
 const checkAnswer = (id) => {
   const task = tasks.value.find(t => t.id === id)
-  const userVal = userAnswers.value[id]
-  if (userVal === undefined || userVal === '' || Number.isNaN(Number(userVal))) return
+  if (!task) return
 
+  const raw = userAnswers.value[id]
+  const userVal = Number(raw)
+  if (!Number.isFinite(userVal)) return
+
+  const precision = Number.isFinite(Number(task.precision)) ? Number(task.precision) : 0.01
   const prev = results.value[id]
-  const isCorrect = Math.abs(userVal - task.correct_answer) < (task.precision || 0.01)
+  const isCorrect = Math.abs(userVal - task.correct_answer) <= precision
+
   results.value[id] = isCorrect
   saveResults()
-  
+
   if (isCorrect) {
+    taskExplanations.value[id] = buildTaskExplanation(task, userVal)
     if (prev !== true) triggerConfetti()
     fetchTaskCurve(id)
   }
@@ -267,6 +614,57 @@ const getAnswerIcon = (id) => {
   if (results.value[id] === undefined) return ''
   return results.value[id] ? 'mdi-check-circle' : 'mdi-alert-circle'
 }
+
+/**
+ * Формирует короткое объяснение решения, соответствующее выбранному методу.
+ * @param {{method: string, target_x: number, correct_answer: number}} task
+ * @param {number} userValue
+ * @returns {string}
+ */
+const buildTaskExplanation = (task, userValue) => {
+  const method = task.method
+  const x = Number(task.target_x)
+  const y = Number(task.correct_answer)
+  const shownUser = Number.isFinite(userValue) ? userValue : y
+
+  if (method === 'linear') {
+    return `Ответ считается верным с учётом погрешности. Для линейной интерполяции берём две ближайшие точки и считаем значение по прямой. В точке <span class="math-font">x = ${x}</span> получаем <span class="math-font">f(x) ≈ ${y}</span>. Ваш ответ: <span class="math-font">${shownUser}</span>.`
+  }
+
+  const methodName = method === 'lagrange' ? 'Лагранжа' : 'Ньютона'
+  return `Здесь применяется полиномиальная интерполяция методом ${methodName}. Сервис строит интерполяционный полином по заданным точкам и вычисляет значение в точке <span class="math-font">x = ${x}</span>: <span class="math-font">f(x) ≈ ${y}</span>. Ваш ответ: <span class="math-font">${shownUser}</span>.`
+}
+
+/**
+ * Загружает сохранённый прогресс и, если нужно, догружает графики для выполненных заданий.
+ * @returns {Promise<void>}
+ */
+const loadSavedProgress = async () => {
+  const saved = localStorage.getItem('interpolation_practice_results')
+  if (!saved) return
+
+  try {
+    const parsed = JSON.parse(saved)
+    results.value = parsed?.results && typeof parsed.results === 'object' ? parsed.results : {}
+    userAnswers.value = parsed?.answers && typeof parsed.answers === 'object' ? parsed.answers : {}
+  } catch {
+    localStorage.removeItem('interpolation_practice_results')
+    results.value = {}
+    userAnswers.value = {}
+    notify('Сохранённый прогресс был повреждён и сброшен.', 'warning')
+  }
+
+  const completedIds = Object.keys(results.value)
+    .map(v => Number(v))
+    .filter(v => Number.isFinite(v) && results.value[String(v)] === true)
+
+  await Promise.allSettled(completedIds.map(id => fetchTaskCurve(id)))
+}
+
+onMounted(async () => {
+  await loadSavedProgress()
+  await renderTheoryMath()
+})
 </script>
 
 <style scoped>
@@ -275,5 +673,25 @@ const getAnswerIcon = (id) => {
 }
 .bg-surface-light {
   background-color: #fcfcfd !important;
+}
+.theory-card {
+  border: 1px solid #E2E8F0;
+}
+.formula-block {
+  background: var(--color-rem-blue-light);
+  border-color: rgba(94, 157, 200, 0.25) !important;
+  padding: 12px 14px;
+}
+.illustration-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.note-panel {
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
 }
 </style>
