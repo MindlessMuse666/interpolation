@@ -1,7 +1,8 @@
 <div align="center">
   <img src="./frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
-  <br/>
-  <br/>
+  <h1>Документация проекта <a href="https://github.com/MindlessMuse666/interpolation/blob/main/README.md">interpolation</a></h1>
+  <p><b><i>Обучающее приложение "Численные методы. Интерполяция" (∩^o^)⊃━☆</i></b></p>
+  <br>
   <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
     <img alt="Go" src="https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white" />
     <img alt="Gin" src="https://img.shields.io/badge/Gin-1.9+-00ADD8?logo=go&logoColor=white" />
@@ -15,26 +16,54 @@
   </div>
 </div>
 
-# Обучающее приложение "Численные методы. Интерполяция"
+## 📖 ["Численные методы. Интерполяция"](https://github.com/MindlessMuse666/interpolation) это...
 
-Интерактивное веб-приложение для изучения методов интерполяции (линейная, Лагранж, Ньютон).
+...интерактивное веб-приложение для изучения методов интерполяции (линейная, Лагранж, Ньютон).
 
-## Архитектура
+Этот проект является курсовой работой по дисциплине **МДК.02.01 "Технология разработки программного обеспечения"**.
+
+## 🏗 Архитектура
+
+### Общие сведения
 
 Проект построен на микросервисной архитектуре:
 
-- **API Gateway**: Маршрутизация, CORS, Rate Limiting (Go + Gin).
-- **Interpolation Service**: Вычислительное ядро с кэшированием (Go + Redis).
-- **History Service**: Сохранение истории вычислений (Go + SQLite + RabbitMQ).
+- **API Gateway**: Маршрутизация, CORS, Rate Limiting (Go + Gin);
+- **Interpolation Service**: Вычислительное ядро с кэшированием (Go + Redis);
+- **History Service**: Сохранение истории вычислений (Go + SQLite + RabbitMQ);
 - **Frontend**: Интерактивный SPA (Vue 3 + Vuetify + Chart.js).
 
-## Запуск через Docker Compose
+### Диаграмма вариантов использования (Use Case Diagram)
+
+Эта диаграмма показывает ...
+
+```puml
+' <СКОРО_БУДЕТ>
+```
+
+### Диаграмма классов (Class Diagram)
+
+Эта диаграмма показывает ...
+
+```puml
+' <СКОРО_БУДЕТ>
+```
+
+### Диаграмма активности (Activity Diagram)
+
+Эта диаграмма показывает ...
+
+```puml
+' <СКОРО_БУДЕТ>
+```
+
+## 🚀 Запуск через Docker Compose
 
 ```bash
 docker compose up --build
 ```
 
-## Доступные эндпоинты
+## 📚 API-Документация
 
 - Фронтенд: `http://localhost/`
 - API Gateway: `http://localhost/api/v1/`
@@ -49,6 +78,18 @@ docker compose up --build
 
 ---
 
+## 🌐 GitHub Pages (Демо)
+
+В ветке [gh-pages](https://github.com/MindlessMuse666/interpolation/tree/gh-pages "Ветка со статической версией фронтенда") находится статическая версия фронтенда, которая используется для демо UI проекта на GitHub Pages.
+
+**ВАЖНО!** Без запущенного локально бэкенда функционал API (авторизация, загрузка слов) работать **не будет**.
+
+---
+
 <div align="center">
   <img src="./frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
+  <br>
+    <sub><b>Веб-приложение // Численные методы. Интерполяция</b></sub>
+    <br>
+    <sup><i>Made with love by <a href="https://github.com/MindlessMuse666" target="_blank" title="MindlessMuse666">MindlessMuse666</a></i></sup>
 </div>

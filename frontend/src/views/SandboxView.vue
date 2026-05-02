@@ -1,9 +1,9 @@
 <template>
   <v-container class="py-8">
-    <v-row>
+    <v-row class="sandbox-row">
       <!-- Controls -->
-      <v-col cols="12" md="4" lg="3">
-        <v-card class="pa-6 mb-6 overflow-hidden">
+      <v-col cols="12" md="4" lg="3" class="d-flex">
+        <v-card class="pa-6 overflow-hidden flex-grow-1 mb-6 mb-md-0">
           <h3 class="text-h5 font-weight-bold mb-6 d-flex align-center">
             <v-icon color="primary" class="mr-2">mdi-cog-outline</v-icon>
             Параметры
@@ -96,8 +96,8 @@
       </v-col>
 
       <!-- Chart -->
-      <v-col cols="12" md="8" lg="9">
-        <v-card class="pa-6 h-100 d-flex flex-column">
+      <v-col cols="12" md="8" lg="9" class="d-flex">
+        <v-card class="pa-6 d-flex flex-column flex-grow-1">
           <h3 class="text-h5 font-weight-bold mb-6 d-flex align-center">
             <v-icon color="secondary" class="mr-2">mdi-chart-bell-curve</v-icon>
             Визуализация
@@ -107,7 +107,7 @@
             {{ error }}
           </v-alert>
 
-          <div class="flex-grow-1 relative-container">
+          <div class="relative-container">
             <div v-if="loading" class="overlay-loader d-flex justify-center align-center">
               <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
             </div>
@@ -115,6 +115,7 @@
               :points="points"
               :curve="curve"
               :targetPoint="result !== null ? { x: targetX, y: result } : null"
+              height="100%"
             />
           </div>
         </v-card>
@@ -207,15 +208,28 @@ const loading = ref(false)
 const error = ref(null)
 const history = ref([])
 
+/**
+ * Добавляет новую точку в конец списка.
+ * @returns {void}
+ */
 const addPoint = () => {
   const lastX = points.value[points.value.length - 1].x
   points.value.push({ x: Number(lastX) + 1, y: 0 })
 }
 
+/**
+ * Удаляет точку по индексу (минимум две точки должны оставаться).
+ * @param {number} index
+ * @returns {void}
+ */
 const removePoint = (index) => {
   points.value.splice(index, 1)
 }
 
+/**
+ * Выполняет интерполяцию через backend API и обновляет график.
+ * @returns {Promise<void>}
+ */
 const calculate = async () => {
   if (!points.value || points.value.length < 2) return
 
@@ -241,7 +255,6 @@ const calculate = async () => {
       fetchHistory()
     }
   } catch (err) {
-    console.error('Calculation error:', err)
     error.value = err.response?.data?.error || 'Ошибка при вычислении'
     result.value = null
     curve.value = []
@@ -252,26 +265,38 @@ const calculate = async () => {
 
 const debouncedCalculate = debounce(calculate, 300)
 
+/**
+ * Загружает историю вычислений.
+ * @returns {Promise<void>}
+ */
 const fetchHistory = async () => {
   try {
     const resp = await axios.get(`${API_URL}/history`)
     history.value = Array.isArray(resp.data) ? resp.data : []
   } catch (err) {
-    console.error('Failed to fetch history', err)
     history.value = []
   }
 }
 
+/**
+ * Очищает историю вычислений.
+ * @returns {Promise<void>}
+ */
 const clearHistory = async () => {
   if (!confirm('Вы уверены, что хотите очистить всю историю?')) return
   try {
     await axios.delete(`${API_URL}/history`)
     history.value = []
   } catch (err) {
-    console.error('Failed to clear history', err)
+    error.value = 'Не удалось очистить историю'
   }
 }
 
+/**
+ * Восстанавливает параметры из записи истории и пересчитывает график.
+ * @param {{method: string, points: Array<{x:number,y:number}>, target_x: number}} h
+ * @returns {void}
+ */
 const restore = (h) => {
   method.value = h.method
   points.value = JSON.parse(JSON.stringify(h.points))
@@ -297,9 +322,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.sandbox-row {
+  align-items: stretch;
+}
 .relative-container {
   position: relative;
-  min-height: 400px;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
 }
 .overlay-loader {
   position: absolute;

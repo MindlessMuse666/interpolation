@@ -23,7 +23,53 @@
                       <h2 class="text-h5 text-md-h4 font-weight-bold text-text-primary">{{ section.title }}</h2>
                     </div>
 
-                    <v-row class="align-start" dense>
+                    <template v-if="section.layout === 'stack'">
+                      <div class="text-body-1 leading-relaxed text-text-primary">
+                        <div
+                          v-for="(p, idx) in section.paragraphsHtml"
+                          :key="`${section.id}-p-${idx}`"
+                          class="mb-3"
+                          v-html="p"
+                        ></div>
+                      </div>
+
+                      <v-sheet
+                        v-if="section.formulaLatex"
+                        class="formula-block mt-4 mb-2"
+                        rounded="lg"
+                        border
+                      >
+                        <div class="math-font text-body-1" v-html="section.formulaLatex"></div>
+                      </v-sheet>
+
+                      <div class="illustration-card mt-5">
+                        <component :is="section.illustrationComponent" />
+                      </div>
+
+                      <v-expansion-panels
+                        v-if="section.notes?.length"
+                        multiple
+                        variant="accordion"
+                        class="mt-5 notes-panels"
+                        @update:modelValue="renderTheoryMath"
+                      >
+                        <v-expansion-panel
+                          v-for="(note, noteIdx) in section.notes"
+                          :key="`${section.id}-note-${noteIdx}`"
+                          class="note-panel"
+                        >
+                          <v-expansion-panel-title class="text-subtitle-2 font-weight-bold text-text-primary">
+                            <v-icon :color="section.accentColor" size="18" class="mr-2">mdi-note-text-outline</v-icon>
+                            {{ note.title }}
+                          </v-expansion-panel-title>
+                          <v-expansion-panel-text>
+                            <div class="text-body-2 leading-relaxed text-text-primary" v-html="note.bodyHtml"></div>
+                          </v-expansion-panel-text>
+                        </v-expansion-panel>
+                      </v-expansion-panels>
+                    </template>
+
+                    <v-row v-else class="align-start" dense>
                       <v-col cols="12" md="7">
                         <div class="text-body-1 leading-relaxed text-text-primary">
                           <div
@@ -328,7 +374,36 @@ const IllustrationLinear = createSvgIllustrationComponent(
   <g fill="#3BAB7B">
     <circle cx="186" cy="115" r="7"/>
   </g>
-  <text x="186" y="142" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#64748B">промежуточная точка</text>
+  <text x="186" y="142" text-anchor="middle" dominant-baseline="middle" font-family="Inter, sans-serif" font-size="12" fill="#64748B">промежуточная точка</text>
+</svg>
+  `.trim()
+)
+
+const IllustrationApplications = createSvgIllustrationComponent(
+  'IllustrationApplications',
+  `
+<svg viewBox="0 0 360 220" width="100%" height="220" role="img" aria-label="Применение интерполяции">
+  <rect x="0" y="0" width="360" height="220" rx="14" fill="#FFFFFF"/>
+  <g fill="#F1F0F5" stroke="#E2E8F0" stroke-width="1">
+    <rect x="24" y="30" width="312" height="160" rx="12"/>
+  </g>
+  <g stroke="#E2E8F0" stroke-width="1">
+    <path d="M44 156H316" />
+    <path d="M44 120H316" />
+    <path d="M44 84H316" />
+  </g>
+  <g>
+    <circle cx="78" cy="146" r="8" fill="#E88CA5"/>
+    <circle cx="140" cy="110" r="8" fill="#E88CA5"/>
+    <circle cx="210" cy="132" r="8" fill="#E88CA5"/>
+    <circle cx="284" cy="92" r="8" fill="#E88CA5"/>
+  </g>
+  <path d="M78 146 C 110 120, 120 108, 140 110 S 188 150, 210 132 S 254 82, 284 92" fill="none" stroke="#5E9DC8" stroke-width="4" stroke-linecap="round"/>
+  <g font-family="Inter, sans-serif" font-size="12" fill="#64748B">
+    <text x="44" y="204" dominant-baseline="middle">датчики</text>
+    <text x="140" y="204" dominant-baseline="middle">табличные данные</text>
+    <text x="270" y="204" dominant-baseline="middle">графики</text>
+  </g>
 </svg>
   `.trim()
 )
@@ -374,8 +449,12 @@ const IllustrationRunge = createSvgIllustrationComponent(
   </g>
   <path d="M48 130 C 90 90, 120 70, 160 90 S 240 150, 300 130" fill="none" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
   <path d="M48 130 C 90 40, 130 190, 160 70 S 220 170, 240 60 S 300 200, 324 120" fill="none" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
-  <text x="48" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">истинная функция</text>
-  <text x="180" y="212" font-family="Inter, sans-serif" font-size="12" fill="#64748B">полином высокой степени</text>
+  <g font-family="Inter, sans-serif" font-size="12" fill="#64748B">
+    <path d="M52 206H92" stroke="#5E9DC8" stroke-width="3" stroke-linecap="round"/>
+    <text x="100" y="206" dominant-baseline="middle">истинная функция</text>
+    <path d="M214 206H254" stroke="#E88CA5" stroke-width="3" stroke-linecap="round"/>
+    <text x="262" y="206" dominant-baseline="middle">полином высокой степени</text>
+  </g>
 </svg>
   `.trim()
 )
@@ -390,8 +469,8 @@ const IllustrationCompare = createSvgIllustrationComponent(
     <rect x="188" y="38" width="144" height="144" rx="12"/>
   </g>
   <g font-family="Inter, sans-serif" font-size="12" fill="#1E293B" font-weight="700">
-    <text x="100" y="62" text-anchor="middle">Лагранж</text>
-    <text x="260" y="62" text-anchor="middle">Ньютон</text>
+    <text x="100" y="62" text-anchor="middle" dominant-baseline="middle">Лагранж</text>
+    <text x="260" y="62" text-anchor="middle" dominant-baseline="middle">Ньютон</text>
   </g>
   <g stroke="#E88CA5" stroke-width="3" stroke-linecap="round">
     <path d="M50 150 C 70 90, 110 90, 130 150" fill="none"/>
@@ -408,8 +487,8 @@ const IllustrationCompare = createSvgIllustrationComponent(
     <circle cx="290" cy="120" r="4" fill="#5E9DC8"/>
   </g>
   <g font-family="Inter, sans-serif" font-size="11" fill="#64748B">
-    <text x="100" y="194" text-anchor="middle">единый полином</text>
-    <text x="260" y="194" text-anchor="middle">наращивание по шагам</text>
+    <text x="100" y="194" text-anchor="middle" dominant-baseline="middle">единый полином</text>
+    <text x="260" y="194" text-anchor="middle" dominant-baseline="middle">наращивание по шагам</text>
   </g>
 </svg>
   `.trim()
@@ -421,6 +500,7 @@ const theorySections = [
     title: 'Что такое интерполяция?',
     icon: 'mdi-book-open-variant',
     accentColor: 'primary',
+    layout: 'stack',
     paragraphsHtml: [
       'Интерполяция - это способ восстановить значения <strong>между</strong> уже известными точками. Представьте, что у вас есть несколько измерений с датчика, таблица из эксперимента или точки на графике, а между ними есть пробелы. Интерполяция помогает аккуратно заполнить эти пробелы так, чтобы новая функция проходила через все заданные узлы.',
       'Иначе говоря, мы не пытаемся угадать поведение функции "из воздуха", а строим модель на основе уже известных данных. Это особенно удобно, когда точная формула неизвестна, слишком сложна или отсутствует, но есть надёжные измерения.',
@@ -445,6 +525,7 @@ const theorySections = [
     title: 'Где это применяется',
     icon: 'mdi-map-marker-path',
     accentColor: 'secondary',
+    layout: 'stack',
     paragraphsHtml: [
       'Интерполяция используется почти везде, где данные получаются не непрерывно, а отдельными измерениями. В инженерии она встречается в калибровке датчиков, обработке сигналов, робототехнике, авиации, строительстве и моделировании физических процессов.',
       'Если известны значения температуры в нескольких моментах, интерполяция помогает оценить температуру в промежуточный момент. Если есть табличные данные давления, скорости или яркости - можно восстановить плавную зависимость между ними.'
@@ -461,7 +542,7 @@ const theorySections = [
           'Когда формула поведения системы неизвестна или неудобна, но есть таблица измерений, интерполяция превращает дискретные точки в удобную модель для расчётов.'
       }
     ],
-    illustrationComponent: IllustrationPointsCurve
+    illustrationComponent: IllustrationApplications
   },
   {
     id: 'linear',
@@ -715,6 +796,15 @@ onMounted(async () => {
 }
 .notes-panels :deep(.v-expansion-panel)::before {
   opacity: 0 !important;
+  border-top: 0 !important;
+}
+.notes-panels :deep(.v-expansion-panel-title) {
+  border-top: 0 !important;
+}
+.notes-panels :deep(.v-expansion-panel-title)::before {
+  opacity: 0 !important;
+}
+.notes-panels :deep(.v-expansion-panels--variant-accordion) {
   border-top: 0 !important;
 }
 .notes-panels :deep(.v-expansion-panel) {
