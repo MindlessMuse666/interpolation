@@ -1,0 +1,6 @@
+*
+!frontend/**
+!docker/**
+frontend/node_modules
+frontend/dist
+frontend/.vite

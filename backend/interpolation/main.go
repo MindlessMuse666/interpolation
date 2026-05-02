@@ -245,7 +245,8 @@ func main() {
 		}
 	}()
 
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 
 	v1 := r.Group("/api/v1")
 	{
