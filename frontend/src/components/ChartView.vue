@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-container">
+  <div class="chart-container" :style="containerStyle">
     <Line :data="chartData" :options="chartOptions" />
   </div>
 </template>
@@ -41,10 +41,20 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  height: {
+    type: [Number, String],
+    default: 400
+  },
   targetPoint: {
     type: Object,
     default: null
   }
+})
+
+const containerStyle = computed(() => {
+  if (typeof props.height === 'number') return { height: `${props.height}px` }
+  if (typeof props.height === 'string' && props.height.trim().length > 0) return { height: props.height }
+  return { height: '400px' }
 })
 
 const chartData = computed(() => {
@@ -108,7 +118,6 @@ const chartOptions = {
 
 <style scoped>
 .chart-container {
-  height: 400px;
   width: 100%;
 }
 </style>

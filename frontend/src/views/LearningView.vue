@@ -12,32 +12,22 @@
             <v-window v-model="tab">
               <!-- Theory -->
               <v-window-item value="theory">
-                <div v-for="(t, index) in theory" :key="t.title" class="mb-10">
+                <div ref="theoryRoot">
+                  <div v-for="(t, index) in theory" :key="t.title" class="mb-10">
                   <div class="d-flex align-center mb-4">
                     <v-icon :color="index % 2 === 0 ? 'primary' : 'secondary'" size="32" class="mr-3">
                       {{ index % 2 === 0 ? 'mdi-book-open-variant' : 'mdi-lightbulb-on-outline' }}
                     </v-icon>
                     <h2 class="text-h4 font-weight-bold">{{ t.title }}</h2>
                   </div>
-                  <p class="text-body-1 text-text-primary leading-relaxed mb-4">{{ t.content }}</p>
-                  <v-divider v-if="index < theory.length - 1" class="mt-8"></v-divider>
+                    <div class="text-body-1 text-text-primary leading-relaxed mb-4" v-html="t.content"></div>
+                    <v-divider v-if="index < theory.length - 1" class="mt-8"></v-divider>
+                  </div>
                 </div>
               </v-window-item>
 
               <!-- Practice -->
               <v-window-item value="practice">
-                <v-alert
-                  color="secondary"
-                  variant="tonal"
-                  class="mb-8 rounded-lg"
-                  border="start"
-                >
-                  <template v-slot:prepend>
-                    <v-icon size="24">mdi-information-outline</v-icon>
-                  </template>
-                  Решите задачи, используя изученные методы. Введите ответ с точностью до 0.01.
-                </v-alert>
-
                 <div v-for="task in tasks" :key="task.id" class="mb-10">
                   <v-card variant="flat" class="pa-6 border-thin bg-surface-light rounded-xl">
                     <div class="d-flex justify-space-between align-start mb-4">
@@ -103,7 +93,7 @@
                           <v-icon size="18" class="mr-2">mdi-chart-line</v-icon>
                           Визуализация решения
                         </div>
-                        <v-card variant="outlined" class="pa-2 bg-white" height="300">
+                        <v-card variant="outlined" class="pa-2 bg-white" style="min-height: 320px;">
                           <div v-if="taskLoading[task.id]" class="d-flex justify-center align-center h-100">
                             <v-progress-circular indeterminate color="primary"></v-progress-circular>
                           </div>
@@ -112,6 +102,7 @@
                             :points="task.points"
                             :curve="taskCurves[task.id]"
                             :targetPoint="{ x: task.target_x, y: task.correct_answer }"
+                            :height="320"
                           />
                         </v-card>
                       </div>
@@ -135,10 +126,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import axios from 'axios'
 import tasksData from '../tasks.json'
 import ChartView from '../components/ChartView.vue'
+import renderMathInElement from 'katex/contrib/auto-render'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1'
 
@@ -148,6 +140,7 @@ const userAnswers = ref({})
 const results = ref({})
 const taskCurves = ref({})
 const taskLoading = ref({})
+const theoryRoot = ref(null)
 
 onMounted(() => {
   const saved = localStorage.getItem('interpolation_practice_results')
@@ -164,6 +157,29 @@ onMounted(() => {
       console.error('Failed to load results', e)
     }
   }
+})
+
+const renderTheoryMath = async () => {
+  if (tab.value !== 'theory') return
+  await nextTick()
+  if (!theoryRoot.value) return
+  renderMathInElement(theoryRoot.value, {
+    delimiters: [
+      { left: '$$', right: '$$', display: true },
+      { left: '\\[', right: '\\]', display: true },
+      { left: '\\(', right: '\\)', display: false },
+      { left: '$', right: '$', display: false }
+    ],
+    throwOnError: false
+  })
+}
+
+watch(tab, () => {
+  renderTheoryMath()
+})
+
+onMounted(() => {
+  renderTheoryMath()
 })
 
 const saveResults = () => {
@@ -195,32 +211,49 @@ const fetchTaskCurve = async (taskId) => {
 const theory = [
   {
     title: 'Что такое интерполяция?',
-    content: 'Интерполяция — это математический метод нахождения промежуточных значений величины по имеющемуся дискретному набору известных данных. В инженерных расчетах это позволяет восстановить функцию по отдельным точкам измерений. Основная задача состоит в том, чтобы построить функцию $f(x)$, которая проходит точно через заданные узлы $(x_i, y_i)$.'
+    content: String.raw`Интерполяция — это математический метод нахождения промежуточных значений величины по имеющемуся дискретному набору известных данных. В инженерных расчетах это позволяет восстановить функцию по отдельным точкам измерений. Основная задача состоит в том, чтобы построить функцию $f(x)$, которая проходит точно через заданные узлы $(x_i, y_i)$.`
   },
   {
     title: 'Линейная интерполяция',
-    content: 'Самый простой и интуитивный метод. Мы предполагаем, что между двумя известными точками функция ведет себя как прямая линия. Формула для расчета: <span class="formula">y = y_0 + (x - x_0) \cdot \frac{y_1 - y_0}{x_1 - x_0}</span>. Линейная интерполяция проста в реализации, но имеет низкую точность для нелинейных функций.'
+    content: String.raw`Самый простой и интуитивный метод. Мы предполагаем, что между двумя известными точками функция ведет себя как прямая линия. Формула для расчета: <span class="formula">\(y = y_0 + (x - x_0)\cdot \frac{y_1 - y_0}{x_1 - x_0}\)</span>. Линейная интерполяция проста в реализации, но имеет низкую точность для нелинейных функций.`
   },
   {
     title: 'Полином Лагранжа',
-    content: 'Этот метод строит единый многочлен степени $n$, который проходит ровно через все $n+1$ заданные точки. Формула полинома Лагранжа: <span class="formula">L(x) = \sum_{i=0}^{n} y_i \prod_{j=0, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}</span>. Он элегантен математически, но при большом количестве точек может давать сильные осцилляции на краях интервала (эффект Рунге).'
+    content: String.raw`Этот метод строит единый многочлен степени $n$, который проходит ровно через все $n+1$ заданные точки. Формула полинома Лагранжа: <span class="formula">\(L(x) = \sum_{i=0}^{n} y_i \prod_{j=0, j \neq i}^{n} \frac{x - x_j}{x_i - x_j}\)</span>. Он элегантен математически, но при большом количестве точек может давать сильные осцилляции на краях интервала (эффект Рунге).`
   },
   {
     title: 'Полином Ньютона',
-    content: 'В отличие от Лагранжа, метод Ньютона строится итеративно с помощью разделенных разностей. Общий вид: <span class="formula">P_n(x) = f(x_0) + (x-x_0)f(x_0, x_1) + \dots + (x-x_0)\dots(x-x_{n-1})f(x_0, \dots, x_n)</span>. Главное преимущество: при добавлении новой точки данных не нужно пересчитывать весь полином заново — достаточно добавить одно новое слагаемое.'
+    content: String.raw`В отличие от Лагранжа, метод Ньютона строится итеративно с помощью разделённых разностей. Общий вид: <span class="formula">\(P_n(x) = f(x_0) + (x-x_0)f[x_0, x_1] + \dots + (x-x_0)\dots(x-x_{n-1})f[x_0, \dots, x_n]\)</span>. Главное преимущество: при добавлении новой точки данных не нужно пересчитывать весь полином заново — достаточно добавить одно новое слагаемое.`
   }
 ]
+
+const triggerConfetti = async () => {
+  try {
+    const mod = await import('canvas-confetti')
+    const confetti = mod.default ?? mod
+    confetti({
+      particleCount: 140,
+      spread: 70,
+      startVelocity: 35,
+      origin: { y: 0.7 }
+    })
+  } catch (e) {
+    console.error('Confetti failed', e)
+  }
+}
 
 const checkAnswer = (id) => {
   const task = tasks.value.find(t => t.id === id)
   const userVal = userAnswers.value[id]
-  if (userVal === undefined || userVal === '') return
+  if (userVal === undefined || userVal === '' || Number.isNaN(Number(userVal))) return
 
+  const prev = results.value[id]
   const isCorrect = Math.abs(userVal - task.correct_answer) < (task.precision || 0.01)
   results.value[id] = isCorrect
   saveResults()
   
   if (isCorrect) {
+    if (prev !== true) triggerConfetti()
     fetchTaskCurve(id)
   }
 }
