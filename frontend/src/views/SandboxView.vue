@@ -208,28 +208,15 @@ const loading = ref(false)
 const error = ref(null)
 const history = ref([])
 
-/**
- * Добавляет новую точку в конец списка.
- * @returns {void}
- */
 const addPoint = () => {
   const lastX = points.value[points.value.length - 1].x
   points.value.push({ x: Number(lastX) + 1, y: 0 })
 }
 
-/**
- * Удаляет точку по индексу (минимум две точки должны оставаться).
- * @param {number} index
- * @returns {void}
- */
 const removePoint = (index) => {
   points.value.splice(index, 1)
 }
 
-/**
- * Выполняет интерполяцию через backend API и обновляет график.
- * @returns {Promise<void>}
- */
 const calculate = async () => {
   if (!points.value || points.value.length < 2) return
 
@@ -265,10 +252,6 @@ const calculate = async () => {
 
 const debouncedCalculate = debounce(calculate, 300)
 
-/**
- * Загружает историю вычислений.
- * @returns {Promise<void>}
- */
 const fetchHistory = async () => {
   try {
     const resp = await axios.get(`${API_URL}/history`)
@@ -278,10 +261,6 @@ const fetchHistory = async () => {
   }
 }
 
-/**
- * Очищает историю вычислений.
- * @returns {Promise<void>}
- */
 const clearHistory = async () => {
   if (!confirm('Вы уверены, что хотите очистить всю историю?')) return
   try {
@@ -292,11 +271,6 @@ const clearHistory = async () => {
   }
 }
 
-/**
- * Восстанавливает параметры из записи истории и пересчитывает график.
- * @param {{method: string, points: Array<{x:number,y:number}>, target_x: number}} h
- * @returns {void}
- */
 const restore = (h) => {
   method.value = h.method
   points.value = JSON.parse(JSON.stringify(h.points))
