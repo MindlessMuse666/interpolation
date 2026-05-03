@@ -127,6 +127,20 @@
   </a>
 </div>
 
+### Диаграмма последовательностей (Sequence Diagram)
+
+Диаграмма показывает взаимодействие компонентов при **обработке запроса интерполяции** и при **получении истории вычислений**: вызов через API Gateway, проверка кэша Redis (cache hit/miss), вычисление в Interpolation Service, публикация события в RabbitMQ и сохранение записи в SQLite через History Service.
+
+<div align="center">
+  <a href="./docs/diagrams/sequence-diagram.png" target="_blank">
+    <img
+      src="./docs/diagrams/sequence-diagram.png"
+      alt="Sequence Diagram"
+      style="border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 4px 12px rgba(30, 41, 59, 0.08); max-width: 100%; height: auto;"
+    />
+  </a>
+</div>
+
 ## 📂 Структура проекта
 
 Проект разделён на **frontend** (SPA) и **backend** (набор Go-сервисов), а инфраструктурные зависимости описаны через Docker Compose.
