@@ -1,21 +1,23 @@
 <div align="center">
-  <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
-  <br/>
-  <br/>
+  <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="200" height="200" />
+  <h1>Контент-спецификация проекта <a href="https://github.com/MindlessMuse666/interpolation/blob/main/README.md">interpolation</a></h1>
+  <p><b><i>Обучающее приложение "Численные методы. Интерполяция" (∩^o^)⊃━☆</i></b></p>
+  <br>
   <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-    <img alt="Go" src="https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white" />
-    <img alt="Gin" src="https://img.shields.io/badge/Gin-1.9+-00ADD8?logo=go&logoColor=white" />
-    <img alt="Vue.js" src="https://img.shields.io/badge/Vue.js-3.4-4FC08D?logo=vuedotjs&logoColor=white" />
-    <img alt="Vite" src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white" />
-    <img alt="Vuetify" src="https://img.shields.io/badge/Vuetify-3-1867C0?logo=vuetify&logoColor=white" />
-    <img alt="Chart.js" src="https://img.shields.io/badge/Chart.js-4-FF6384?logo=chartdotjs&logoColor=white" />
-    <img alt="Docker" src="https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white" />
-    <img alt="Redis" src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white" />
-    <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3-FF6600?logo=rabbitmq&logoColor=white" />
+    <img alt="Go" src="https://img.shields.io/badge/Go-1.25.5-00ADD8?style=for-the-badge&logo=go&logoColor=white" />
+    <img alt="Gin" src="https://img.shields.io/badge/Gin-1.9+-00ADD8?style=for-the-badge&logo=go&logoColor=white" />
+    <img alt="Vue.js" src="https://img.shields.io/badge/Vue.js-3.5.32-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" />
+    <img alt="Vite" src="https://img.shields.io/badge/Vite-8.0.10-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+    <img alt="Vuetify" src="https://img.shields.io/badge/Vuetify-3.12.5-1867C0?style=for-the-badge&logo=vuetify&logoColor=white" />
+    <img alt="Chart.js" src="https://img.shields.io/badge/Chart.js-4.5.1-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" />
+    <img alt="Docker" src="https://img.shields.io/badge/Docker-compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+    <img alt="Redis" src="https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
+    <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white" />
+    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-3-00ADD8?style=for-the-badge&logo=sqlite&logoColor=white" />
+    <img alt="Swagger" src="https://img.shields.io/badge/Swagger-4-FF6384?style=for-the-badge&logo=swagger&logoColor=white" />
+    <img alt="plantuml" src="https://img.shields.io/badge/plantuml-4-FF6384?style=for-the-badge&logo=uml&logoColor=white" />
   </div>
 </div>
-
-# Контент-спецификация
 
 ## Обучающее приложение "Численные методы. Интерполяция"  
 
@@ -54,7 +56,7 @@
       👨‍🏫 Преподаватель
     </td>
     <td style="padding: 14px 20px; color: #1E293B;">
-      Томашеевич Александр Андреевич
+      Томашеевич А. А.
     </td>
   </tr>
   <tr>
@@ -62,7 +64,7 @@
       📅 Дата
     </td>
     <td style="padding: 14px 20px; color: #1E293B;">
-      2026-04-29
+      2026-05-03
     </td>
   </tr>
 </table>
@@ -94,7 +96,7 @@
 ├── H3 заголовок
 ├── Текст (Body Large, 3-6 строк)
 ├── Формула (если применимо)
-├── SVG-иллюстрация (простая анимация)
+├── PNG-иллюстрация (из `frontend/src/assets/`)
 └── Заметки (раскрывающийся блок с доп. инфо)
 ```
 
@@ -406,18 +408,18 @@ P_n(x)=f(x_0)+(x-x_0)f[x_0,x_1]+(x-x_0)(x-x_1)f[x_0,x_1,x_2]+\dots
 ### 6.1 Формулы
 
 ```
-- Использовать KaTeX/MathJax для рендеринга
+- Использовать KaTeX для рендеринга
 - Индексы: x₀, y₁ (нижние), x² (верхние)
 - Дроби: \frac{y₁ - y₀}{x₁ - x₀}
 ```
 
-### 6.2 SVG-иллюстрации
+### 6.2 PNG-иллюстрации
 
 ```
-1. Точки + интерполяционная кривая (анимация построения)
-2. Эффект Рунге (колебания на краях)
-3. Таблица разделенных разностей (Ньютон)
-4. Прямая линия между точками (линейная)
+1. интерполяция_восстановление_значений_между_узлами.png
+2. линейная_интерполяция.png
+3. полином_лагранжа.png
+4. полином_ньютона.png
 ```
 
 ### 6.3 Тон повествования
@@ -456,7 +458,7 @@ Response:
 - Текст Body Large (18px)
 - Формула в отдельном блоке
 - Заметки: accordion (Vuetify ExpansionPanel)
-- SVG: 300x200px, анимированный
+- PNG: иллюстрация по теме (уникальная для карточки), масштабируется по ширине карточки
 ```
 
 ### 8.2 Практические задания
@@ -474,4 +476,8 @@ Response:
 
 <div align="center">
   <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
+  <br>
+    <sub><b>Веб-приложение // Численные методы. Интерполяция</b></sub>
+    <br>
+    <sup><i>Made with love by <a href="https://github.com/MindlessMuse666" target="_blank" title="MindlessMuse666">MindlessMuse666</a></i></sup>
 </div>

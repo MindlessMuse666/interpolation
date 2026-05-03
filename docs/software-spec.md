@@ -1,17 +1,20 @@
 <div align="center">
-  <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
+  <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="200" height="200" />
   <br/>
   <br/>
   <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-    <img alt="Go" src="https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white" />
-    <img alt="Gin" src="https://img.shields.io/badge/Gin-1.9+-00ADD8?logo=go&logoColor=white" />
-    <img alt="Vue.js" src="https://img.shields.io/badge/Vue.js-3.4-4FC08D?logo=vuedotjs&logoColor=white" />
-    <img alt="Vite" src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white" />
-    <img alt="Vuetify" src="https://img.shields.io/badge/Vuetify-3-1867C0?logo=vuetify&logoColor=white" />
-    <img alt="Chart.js" src="https://img.shields.io/badge/Chart.js-4-FF6384?logo=chartdotjs&logoColor=white" />
-    <img alt="Docker" src="https://img.shields.io/badge/Docker-compose-2496ED?logo=docker&logoColor=white" />
-    <img alt="Redis" src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white" />
-    <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3-FF6600?logo=rabbitmq&logoColor=white" />
+    <img alt="Go" src="https://img.shields.io/badge/Go-1.25.5-00ADD8?style=for-the-badge&logo=go&logoColor=white" />
+    <img alt="Gin" src="https://img.shields.io/badge/Gin-1.9+-00ADD8?style=for-the-badge&logo=go&logoColor=white" />
+    <img alt="Vue.js" src="https://img.shields.io/badge/Vue.js-3.5.32-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white" />
+    <img alt="Vite" src="https://img.shields.io/badge/Vite-8.0.10-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+    <img alt="Vuetify" src="https://img.shields.io/badge/Vuetify-3.12.5-1867C0?style=for-the-badge&logo=vuetify&logoColor=white" />
+    <img alt="Chart.js" src="https://img.shields.io/badge/Chart.js-4.5.1-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" />
+    <img alt="Docker" src="https://img.shields.io/badge/Docker-compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+    <img alt="Redis" src="https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
+    <img alt="RabbitMQ" src="https://img.shields.io/badge/RabbitMQ-3-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white" />
+    <img alt="SQLite" src="https://img.shields.io/badge/SQLite-3-00ADD8?style=for-the-badge&logo=sqlite&logoColor=white" />
+    <img alt="Swagger" src="https://img.shields.io/badge/Swagger-4-FF6384?style=for-the-badge&logo=swagger&logoColor=white" />
+    <img alt="plantuml" src="https://img.shields.io/badge/plantuml-4-FF6384?style=for-the-badge&logo=uml&logoColor=white" />
   </div>
 </div>
 
@@ -54,7 +57,7 @@
       👨‍🏫 Преподаватель
     </td>
     <td style="padding: 14px 20px; color: #1E293B;">
-      Томашеевич Александр Андреевич
+      Томашеевич А. А.
     </td>
   </tr>
   <tr>
@@ -62,7 +65,7 @@
       📅 Дата
     </td>
     <td style="padding: 14px 20px; color: #1E293B;">
-      2026-04-29
+      2026-05-03
     </td>
   </tr>
 </table>
@@ -156,7 +159,7 @@ graph LR
 
 #### Осознанный выбор формата конфигураций  
 
-Для повышения читаемости и удобства сопровождения все конфигурационные файлы сервисов (порты, адреса Redis/RabbitMQ, TTL и др.) записываются в формате **TOML**. TOML поддерживает комментарии, минимизирует синтаксический шум по сравнению с JSON и интуитивно понятен человеку. В коде Go используется библиотека `github.com/BurntSushi/toml`. Учебные задания (tasks) также хранятся в виде `tasks.toml`, что позволяет легко пополнять банк упражнений без правок исходного кода.
+Для повышения читаемости и удобства сопровождения конфигурация сервисов (порты, адреса Redis/RabbitMQ, TTL и др.) хранится в формате **TOML** (файл `config/config.toml`). В коде Go используется библиотека `github.com/BurntSushi/toml`. Банк учебных заданий хранится на фронтенде в `frontend/src/tasks.json`.
 
 ### 3.3 Почему Event-Driven?  
 
@@ -179,9 +182,7 @@ graph LR
 **Ответ:** `200 OK`  
 
 ```json
-{
-  "methods": ["linear", "lagrange", "newton"]
-}
+["linear", "lagrange", "newton"]
 ```
 
 #### 4.1.2 Выполнить интерполяцию  
@@ -212,16 +213,18 @@ graph LR
 
 ```json
 {
+  "method": "lagrange",
   "result": 2.75,
-  "curve_points": [
+  "curve": [
     {"x": 0.0, "y": 1.0},
     {"x": 0.1, "y": 1.2},
     ...
-  ]
+  ],
+  "cached": false
 }
 ```
 
-`curve_points` - массив точек, образующих плавную кривую для графика (не менее 100 точек). При ошибках возвращается `4xx` с описанием.
+`curve` - массив точек, образующих плавную кривую для графика (не менее 100 точек). Поле `cached` показывает, был ли ответ получен из Redis-кэша. При ошибках возвращается `4xx` с описанием.
 
 #### 4.1.3 Получить историю вычислений  
 
@@ -240,6 +243,18 @@ graph LR
     "created_at": "2026-04-28T10:20:30Z"
   }
 ]
+```
+
+#### 4.1.4 Очистить историю вычислений  
+
+`DELETE /api/v1/history`  
+
+**Ответ:** `200 OK`  
+
+```json
+{
+  "message": "History cleared"
+}
 ```
 
 ### 4.2 Внутренние асинхронные события  
@@ -271,10 +286,10 @@ History Service потребляет сообщения из очереди `his
 Ключ кэша строится как:  
 
 ```
-interpolation:<md5(method + отсортированные_точки + target_x)>
+interpolation:<md5(json(request_body))>
 ```
 
-Значение - JSON с полями `result` и `curve_points`. TTL - 3600 секунд (1 час). При попадании в кэш вычисление не производится, событие в RabbitMQ не отправляется.
+Значение - JSON-ответ сервиса интерполяции с полями `method`, `result`, `curve`, `cached`. TTL - 3600 секунд (1 час, задаётся в `config/config.toml`). При попадании в кэш вычисление не производится, событие в RabbitMQ не отправляется.
 
 ---
 
@@ -322,7 +337,7 @@ interpolation:<md5(method + отсортированные_точки + target_x
 |-----------|------------|---------------------|
 | **Производительность** | 95-й перцентиль времени ответа на запрос интерполяции (без кэша) < 200 мс; кэшированный запрос < 10 мс. | Go-горутины, Redis in-memory кэш, Gin, хеширование запросов. |
 | **Пропускная способность** | API Gateway выдерживает ≥ 200 запросов/с. | Stateless-архитектура, Nginx upstream при необходимости. |
-| **Безопасность** | Защита от инъекций, валидация всех входных данных, CORS (разрешён только origin фронтенда), ограничение частоты запросов. | Строгая типизация Go, middleware CORS и rate limiter (Redis sliding window), валидация структур с тегами `validate`. |
+| **Безопасность** | Валидация всех входных данных, CORS (в учебной сборке разрешены все origin), ограничение частоты запросов. | gin-contrib/cors, ulule/limiter (Redis store, 200 запросов/мин на IP), валидация Gin binding. |
 | **Доступность** | Сервис интерполяции работает при отказе History Service или RabbitMQ (деградация: история не сохраняется). При отказе Redis вычисления продолжаются без кэша. | Graceful degradation: проверка доступности зависимостей, логирование ошибок. |
 | **Надёжность** | Гарантированная доставка событий истории, отсутствие потерь при сбоях. | Durable очереди и persistent delivery mode в RabbitMQ; подтверждение (ack) после записи в БД. |
 | **Масштабируемость** | Горизонтальное масштабирование вычислительного и исторического сервисов. | Stateless-сервисы, общие Redis и RabbitMQ; Docker Compose scale. |
@@ -366,27 +381,28 @@ erDiagram
 
 ## 8. Требования к фронтенду  
 
-- Проект создан с использованием Vite + Vue 3 (шаблон `create vue@latest` или аналогичный).  
+- Проект создан с использованием Vite + Vue 3.  
 - Две страницы через Vue Router: `/learning`, `/sandbox`.  
 - UI-компоненты Vuetify 3 (Material Design).  
 - Графики на базе `vue-chartjs` (scatter + line).  
+- Формулы в теории рендерятся через KaTeX.  
 - Структура каталогов:  
 
 ```text
 src/
   main.js
   App.vue
+  tasks.json
+  style.css
+  assets/
+    *.png
+  components/
+    ChartView.vue
+  plugins/
+    vuetify.js
   router/index.js
-  services/api.js
   views/LearningView.vue
   views/SandboxView.vue
-  components/TheoryBlock.vue
-  components/PracticeBlock.vue
-  components/FreePracticeBlock.vue
-  components/PointsInput.vue
-  components/MethodSelect.vue
-  components/ChartView.vue
-  components/ResultCard.vue
 ```
 
 ---
@@ -396,11 +412,11 @@ src/
 Файл `docker-compose.yml` определяет сервисы:  
 
 - **nginx** - раздача статики фронтенда, проксирование API.  
-- **api-gateway** - скомпилированный образ из `backend/gateway/`, порт 8080 (внутренний).  
+- **gateway** - API Gateway (Gin), порт 8080.  
 - **interpolation-service** - порт 8081.  
 - **history-service** - порт 8082.  
-- **redis** - официальный образ, без внешнего порта.  
-- **rabbitmq** - официальный образ с management-плагином (порт 15672 доступен только для разработки).  
+- **redis** - официальный образ (порт 6379 открыт наружу для разработки).  
+- **rabbitmq** - официальный образ с management-плагином (порты 5672/15672).  
 
 Запуск:  
 
@@ -478,4 +494,8 @@ Gateway автоматически генерирует Swagger/OpenAPI-спец
 
 <div align="center">
   <img src="../frontend/public/favicon.svg" alt="interpolation_logo" width="100" height="100" />
+  <br>
+    <sub><b>Веб-приложение // Численные методы. Интерполяция</b></sub>
+    <br>
+    <sup><i>Made with love by <a href="https://github.com/MindlessMuse666" target="_blank" title="MindlessMuse666">MindlessMuse666</a></i></sup>
 </div>
